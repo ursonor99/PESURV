@@ -1,4 +1,4 @@
-#**PES UNIVERSITY ECE22** Capstone-Project 
+# **PES UNIVERSITY ECE22** Capstone-Project 
 
 
 ## Team Composition
@@ -7,5 +7,5 @@ Giridhar N Prabhu
 Thimmaya P R  
 Suhaas G N  
 
-##Project Title  
+## Project Title  
 **Implementation of RISC-V RV32I ISA and its extension in Xilinx FPGA with a serial interface**
