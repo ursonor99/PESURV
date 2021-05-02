@@ -1,5 +1,4 @@
-incomplete
-
+**Core implementation documentation**
 # Adder
 
 32 bit carry look ahead adder
