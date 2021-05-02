@@ -24,14 +24,14 @@ ops: ![ops](https://github.com/ursonor99/Capstone/blob/323b50f3e6700b7afaceb022e
 
 
 ## Inputs
-i_clk
-i_rst_n
-i_rs1_addr
-i_rs2_addr
-i_rd_addr
-i_rd_data
-i_write_en
+i_clk  
+i_rst_n  
+i_rs1_addr  
+i_rs2_addr  
+i_rd_addr  
+i_rd_data  
+i_write_en  
 
 ## Outputs
-o_rs1_data
-o_rs2_data
+o_rs1_data  
+o_rs2_data  
