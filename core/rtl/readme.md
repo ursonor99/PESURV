@@ -1,4 +1,4 @@
-**Core implementation documentation**
+**Core implementation documentationgit**
 # Adder
 
 32 bit carry look ahead adder
@@ -10,6 +10,8 @@
 1 output 
 
 ## operations supported
+
+ops: ![ops](https://github.com/ursonor99/Capstone/blob/323b50f3e6700b7afaceb022eeed8e48097d68cd/bin/alu%20operations.png)
 
 (to be filled)
 
