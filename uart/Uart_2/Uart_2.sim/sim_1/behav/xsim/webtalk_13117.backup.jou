@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:47 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Wed May 12 21:15:43 2021
+# Process ID: 13117
+# Current directory: /mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim
+# Command line: wbtcv -mode batch -source /mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim/xsim.dir/uart_tb_behav/webtalk/xsim_webtalk.tcl -notrace
+# Log file: /mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim/webtalk.log
+# Journal file: /mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim/webtalk.jou
+#-----------------------------------------------------------
+source /mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim/xsim.dir/uart_tb_behav/webtalk/xsim_webtalk.tcl -notrace

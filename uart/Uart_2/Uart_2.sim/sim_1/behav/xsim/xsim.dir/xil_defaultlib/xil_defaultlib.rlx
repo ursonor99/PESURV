@@ -1,0 +1,8 @@
+0.7
+2020.2
+Nov 18 2020
+09:20:35
+/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.sim/sim_1/behav/xsim/glbl.v,1605673889,verilog,,,,glbl,,,,,,,,
+/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.srcs/sim_1/new/uart_tb.v,1620837649,verilog,,,,uart_tb,,,,,,,,
+/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.srcs/sources_1/new/uart_rx.v,1620837902,verilog,,/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.srcs/sources_1/new/uart_tx.v,,uart_rx,,,,,,,,
+/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.srcs/sources_1/new/uart_tx.v,1620837239,verilog,,/mnt/Curriculum/Capstone/Playground/Gates/Uart_2/Uart_2.srcs/sim_1/new/uart_tb.v,,uart_tx,,,,,,,,
