@@ -31,6 +31,8 @@ i_rd_addr
 i_rd_data  
 i_write_en  
 
+
+
 ### Outputs
 o_rs1_data  
 o_rs2_data  
@@ -38,3 +40,10 @@ o_rs2_data
 ## Program Counter 
 
 pending....
+
+
+
+
+### ram 1
+
+
