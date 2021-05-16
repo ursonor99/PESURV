@@ -45,5 +45,11 @@ pending....
 
 
 ### ram 1
+2 ports 0 and 1.
+port 0 has data_0 address_0 to write
+port 1 has data_1 address_1 to read
+write needs clock and read doesn't need clock signal
+ram1_tb is the test bench 
+
 
 
