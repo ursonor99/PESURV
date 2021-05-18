@@ -52,7 +52,7 @@ pending...
 * write needs clock and read doesn't need clock signal
 * ram1_tb is the test bench 
 
-##ram_2
+## ram_2
 storing and loading data into the memory{total now 32 bits of 256 words are stored }
 ram_wdat=data to be written into memory
 ram_we=write enable
