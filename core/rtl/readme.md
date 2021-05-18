@@ -53,8 +53,8 @@ pending...
 * ram1_tb is the test bench 
 
 ## ram_2
-storing and loading data into the memory{total now 32 bits of 256 words are stored }
-ram_wdat=data to be written into memory
+1)storing and loading data into the memory{total now 32 bits of 256 words are stored }.
+2)ram_wdat=data to be written into memory
 ram_we=write enable
 ram_type=4 bits to select whether its  Half read/write,byte read/write..
         *ram_type=1111 we=1 write full word
