@@ -39,6 +39,28 @@ o_rs2_data
 
 ## Program Counter 
 
+
+## ram_2
+storing and loading data into the memory{total now 32 bits of 256 words are stored }\
+ram_wdat=data to be written into memory\
+ram_we=write enable\
+ram_type=4 bits to select whether its  Half read/write,byte read/write..\
+        *ram_type=1111 we=1 write full word\
+        *ram_type=1111 re=1 read full word\
+        *ram_type=0011 we=1 write half word\
+        *ram_type=0011 re=1 read half word\
+        *ram_type=0001 we=1 write byte word\
+        *ram_type=0001 re=1 read byte word\
+ram_rd_store=enable to display stored value(not necessary just to check)\
+ram_rd_load=enable to display loaded value(not necessary ,just to check)\
+ram_addr=address into which read/write operation is done\
+ram_dout=output display \
+ram_re=read enable\
+data_reg=register that has loaded value.
+
+
+
+
 pending....
 
 
