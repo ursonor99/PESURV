@@ -1,25 +1,3 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05/12/2021 08:58:23 PM
-// Design Name: 
-// Module Name: uart_tx
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 //////////////////////////////////////////////////////////////////////
 // File Downloaded from http://www.nandland.com
 //////////////////////////////////////////////////////////////////////
@@ -34,6 +12,7 @@
 // (10000000)/(115200) = 87
   
 module uart_tx 
+  #(parameter CLKS_PER_BIT = 0)
   (
    input       i_Clock,
    input       i_Tx_DV,
@@ -41,8 +20,9 @@ module uart_tx
    output      o_Tx_Active,
    output reg  o_Tx_Serial,
    output      o_Tx_Done
+   //output reg[2:0]     r_SM_Main
    );
-  parameter CLKS_PER_BIT   = 87;
+  
   parameter s_IDLE         = 3'b000;
   parameter s_TX_START_BIT = 3'b001;
   parameter s_TX_DATA_BITS = 3'b010;
@@ -55,7 +35,13 @@ module uart_tx
   reg [7:0]    r_Tx_Data     = 0;
   reg          r_Tx_Done     = 0;
   reg          r_Tx_Active   = 0;
-     
+  
+//  initial begin
+//  r_SM_Main =0;
+//  end
+ 
+  
+  
   always @(posedge i_Clock)
     begin
        
@@ -70,7 +56,15 @@ module uart_tx
             if (i_Tx_DV == 1'b1)
               begin
                 r_Tx_Active <= 1'b1;
-                r_Tx_Data   <= i_Tx_Byte;
+                r_Tx_Data[7]  <= i_Tx_Byte[7];
+                r_Tx_Data[6]  <= i_Tx_Byte[6];
+                r_Tx_Data[5]  <= i_Tx_Byte[5];
+                r_Tx_Data[4]  <= i_Tx_Byte[4];
+                r_Tx_Data[3]  <= i_Tx_Byte[3];
+                r_Tx_Data[2]  <= i_Tx_Byte[2];
+                r_Tx_Data[1]  <= i_Tx_Byte[1];
+                r_Tx_Data[0]  <= i_Tx_Byte[0];
+                //r_Tx_Data  <= i_Tx_Byte;
                 r_SM_Main   <= s_TX_START_BIT;
               end
             else
