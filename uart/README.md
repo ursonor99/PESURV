@@ -1,5 +1,5 @@
 # **Uart**
-Skeleton code from nandland.com
+Serial Interface to upload the intructions to the APU core
 
 ## Issues faced
 1. Not compatible with newer versions of Xilinx Vivado HLS.
