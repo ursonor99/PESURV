@@ -1,0 +1,19 @@
+module f_a_tb();
+
+reg q_a,q_b,q_cin;
+wire w_sum,w_carry;
+
+f_a xyz(q_a,q_b,q_cin,w_sum,w_carry);
+
+
+initial
+    begin
+        q_a=1'b0;q_b=1'b0;q_cin=1'b0; #10
+        q_a=1'b0;q_b=1'b0;q_cin=1'b1; #10
+        q_a=1'b0;q_b=1'b1;q_cin=1'b0; #10
+        q_a=1'b0;q_b=1'b1;q_cin=1'b1; #10
+        q_a=1'b1;q_b=1'b0;q_cin=1'b0; #10
+        $finish;
+end
+
+endmodule

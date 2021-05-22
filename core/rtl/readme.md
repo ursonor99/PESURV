@@ -1,4 +1,4 @@
-# **Core implementation documentationgit**
+# **Core implementation documentationg**
 ## Adder
 
 32 bit carry look ahead adder
@@ -7,7 +7,7 @@
 
 3 inputs 
 
-1 output 
+1 output
 
 ### operations supported
 
@@ -40,6 +40,10 @@ o_rs2_data
 ## Program Counter 
 
 
+
+
+
+
 ## ram_2
 storing and loading data into the memory{total now 32 bits of 256 words are stored }\
 ram_wdat=data to be written into memory\
@@ -57,21 +61,6 @@ ram_addr=address into which read/write operation is done\
 ram_dout=output display \
 ram_re=read enable\
 data_reg=register that has loaded value.
-
-
-
-
-pending....
-
-
-
-
-### ram 1
-2 ports 0 and 1.
-port 0 has data_0 address_0 to write
-port 1 has data_1 address_1 to read
-write needs clock and read doesn't need clock signal
-ram1_tb is the test bench 
 
 
 
