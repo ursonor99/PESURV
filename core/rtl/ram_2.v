@@ -20,86 +20,91 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ram_2(
+module ram_2 #(
+    parameter w=32,
+    parameter h=8,
+    parameter l=4
+    )(
     clk,
-    rst_n,
     ram_wdat,
     ram_we,
     ram_type,
-    ram_rd_store,
-    ram_rd_load,
     ram_addr,
-    ram_dout,
     ram_re,
     data_reg
     );
+    
 
     input             clk;
-    input             rst_n;
-    input     [31:0]  ram_wdat;
+    input     [w-1:0]  ram_wdat;
     input             ram_we;
-    input     [3:0]   ram_type;
-    input             ram_rd_store;
-    input             ram_rd_load;
-    input      [31:0]  ram_addr;
-    output     [31:0]  ram_dout;
-    input              ram_re;
-    output      [31:0] data_reg;
+    input     [l-1:0]   ram_type;
+    input      [w-1:0]  ram_addr;
+    input               ram_re;
+    output     [w-1:0] data_reg;
+
+wire [h-1:0] address1;
+wire [h-1:0] address2;
+wire [h-1:0] address3;
+wire [h-1:0] address4;
+
  
-integer i=0;   
-reg  [31:0] dram [0:255];
-initial begin
-    for(i=0;i<256;i=i+1)begin
-        dram[i]=0;
-        
-        //$display(dram);
-        end
-end
-//writie in the memory
-always@(posedge clk)begin
-    if(ram_we)begin
-        if(ram_type[0])
-            dram[ram_addr+8'h0][7:0]   <= ram_wdat[7:0];
-        if(ram_type[1])
-            dram[ram_addr+8'h1][15:8]  <= ram_wdat[15:8];
-        if(ram_type[2])
-            dram[ram_addr+8'h2][23:16] <= ram_wdat[23:16];
-        if(ram_type[3])
-            dram[ram_addr+8'h3][31:24] <= ram_wdat[31:24];
-    end
-    $display("%h %b %b",dram[ram_addr+8'h2],ram_addr,ram_addr+8'h3);
-    
-end
+(* ram_style = "block" *)reg [h-1:0] Bram [2**h-1:0];
+//reg [w-1:0] ram_data={w{1'b0}};
+//always@(posedge clk)
 
+assign address1 = ram_addr+1'b0;
+assign  address2 =ram_addr+1'b1;
+assign address3=ram_addr+2'b10;
+assign address4=ram_addr+2'b11;
+
+
+
+
+
+always@(posedge clk)
+
+begin
+        if(ram_we)begin
+            if(ram_type[0])
+                Bram[address1][h-1:0] <=ram_wdat[h-1:0];
+             
+                
+            if(ram_type[1])
+                Bram[address2][h-1:0]<= ram_wdat[2*h-1:h];
+                
+           
+
+            if(ram_type[2])
+                Bram[address3][h-1:0] <=ram_wdat[3*h-1:2*h];
+                
             
-        
 
-reg [31:0] ram_dout_tmp;
-always@(*)
-    if(ram_rd_store)begin
-            ram_dout_tmp ={dram[ram_addr+8'h3][31:24],dram[ram_addr+8'h2][23:16],dram[ram_addr+8'h1][15:8],dram[ram_addr+8'h0][7:0]};
-        end
-    else
-        ram_dout_tmp = 0;
-assign ram_dout = ram_dout_tmp;
+            if(ram_type[3])
+                Bram[address4][h-1:0] <=ram_wdat[4*h-1:3*h];
+                
+            $display(Bram[address1][h-1:0]);
+           
+         end
 
-//assign ram_dout = dram[ram_addr+1'h1];
+end
 
 
-////loading the value to register
+    
 
-assign data_reg[7:0]=(ram_re && ram_type[0])?dram[ram_addr+8'h0][7:0]:2'h00;
-assign data_reg[15:8]=(ram_re && ram_type[1])?dram[ram_addr+8'h1][15:8]:2'h00;
-assign data_reg[23:16]=(ram_re && ram_type[2])?dram[ram_addr+8'h2][23:16]:2'h00;
-assign data_reg[31:24]=(ram_re && ram_type[3])?dram[ram_addr+8'h3][31:24]:2'h00;
-
-
- always@(*)
-    if(ram_rd_load)begin
-        ram_dout_tmp=data_reg[31:0];
+    begin:outputk
+//    reg  [w-1:0] douta_reg={w{1'b0}};
+  //always@(posedge clk) 
+  
+    assign data_reg[7:0] = (ram_re && ram_type[0] && Bram[address1])?Bram[address1]:8'b0000000;
+    assign data_reg[15:8]=(ram_re && ram_type[1] && Bram[address2])?Bram[address2]:8'b00000000; 
+    assign data_reg[23:16]=(ram_re && ram_type[2] && Bram[address3])?Bram[address3]:8'b00000000;
+    assign data_reg[31:24]=(ram_re && ram_type[3] && Bram[address4])?Bram[address4]:8'b00000000;
+    
+    
     end
-   else
-        ram_dout_tmp=0;    
-assign   ram_dout=ram_dout_tmp;
+                                                 
+
+           
 
 endmodule
