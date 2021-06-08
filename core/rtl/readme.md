@@ -1,10 +1,16 @@
-# **Core implementation documentationg**
+# **Core implementation documentationgit**
+
+## GLOBALS 
+file containing 
 ## Adder
 
 32 bit carry look ahead adder
 
 ## ALU
-
+### changes to be done 
+remove reg 
+passtrough rs2
+add branch condition check to a new output branch_cond 
 3 inputs 
 
 1 output
@@ -38,6 +44,16 @@ o_rs1_data
 o_rs2_data  
 
 ## Program Counter 
+stores the address of currently execulting instruction 
+
+###inputs 
+* 
+
+
+
+## Branch module 
+* takes the branch type , branching condition result , branching address as input and sets is_branching and branching_addr accordingly .
+* in JALR sets address LSB to 0 
 
 
 
