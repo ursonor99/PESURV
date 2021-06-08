@@ -70,8 +70,6 @@ output wire[31:0] o_rs2_data
     end
     
     
-    
-    
     assign is_i_rs1_addr_zero= i_rs1_addr==5'b00000;
     assign is_i_rs2_addr_zero= i_rs2_addr==5'b00000;
     

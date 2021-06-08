@@ -13,7 +13,7 @@ passtrough rs2
 add branch condition check to a new output branch_cond 
 3 inputs 
 
-1 output 
+1 output
 
 ### operations supported
 
@@ -37,6 +37,8 @@ i_rd_addr
 i_rd_data  
 i_write_en  
 
+
+
 ### Outputs
 o_rs1_data  
 o_rs2_data  
@@ -53,5 +55,29 @@ stores the address of currently execulting instruction
 * takes the branch type , branching condition result , branching address as input and sets is_branching and branching_addr accordingly .
 * in JALR sets address LSB to 0 
 
-### inputs 
-ebnbhkdjtnbdktnbkldtnb
+
+
+
+
+
+## ram_2
+storing and loading data into the memory{total now 32 bits of 256 words are stored }\
+ram_wdat=data to be written into memory\
+ram_we=write enable\
+ram_type=4 bits to select whether its  Half read/write,byte read/write..\
+        *ram_type=1111 we=1 write full word\
+        *ram_type=1111 re=1 read full word\
+        *ram_type=0011 we=1 write half word\
+        *ram_type=0011 re=1 read half word\
+        *ram_type=0001 we=1 write byte word\
+        *ram_type=0001 re=1 read byte word\
+ram_rd_store=enable to display stored value(not necessary just to check)\
+ram_rd_load=enable to display loaded value(not necessary ,just to check)\
+ram_addr=address into which read/write operation is done\
+ram_dout=output display \
+ram_re=read enable\
+data_reg=register that has loaded value.
+
+
+## To do 
+       l shift imm for br instr b4 jump address is calculated 
