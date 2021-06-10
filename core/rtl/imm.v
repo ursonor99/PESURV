@@ -65,7 +65,7 @@ assign IMM = `I_TYPE == IMM_TYPE ? i_type :
                                                                                                                     `CSR_TYPE == IMM_TYPE ? r_type :
                                                                                                                                               i_type ;
                                                                                                        
-                                             
+assign IMM  = { INSTR[31:3], IMM_TYPE[2:0]};                                              
                                                                                
 
     
