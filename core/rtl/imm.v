@@ -31,8 +31,8 @@ module imm_generator(
     assign u_type = { INSTR[31:12], 12'h000 };
     assign j_type = { {11{INSTR[31]}}, INSTR[31], INSTR[19:12], INSTR[20], INSTR[30:21], 1'b0 };
     assign r_type = { 27'b0, INSTR[19:15] };
- //always @(*)
- //       begin
+//always @(*)
+//       begin
 //         case (IMM_TYPE)
 //               3'b000:  assign IMM = i_type; 
 //               `I_TYPE: assign IMM = i_type;
