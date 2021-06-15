@@ -22,19 +22,23 @@
 
 module im_tb;
     reg         clk;
-    wire [31:0] inst_data;
     reg [31:0]  pc;
     reg         re;
+    wire [31:0] inst_data;
+   
     reg        is_write;
-    
+    reg [31:0] im_addr;
     reg [31:0] im_inst;
     
 inst_ram1 uut(
     clk,
-    inst_data,
+    //read
     pc,
     re,
+    inst_data,
+    //write
     is_write,
+    im_addr,
     im_inst
     
     );
@@ -47,34 +51,29 @@ inst_ram1 uut(
     re=0;
     is_write=0;
     pc=0;
-    im_inst=484484*20;
+    
      //write
-    #10;
+    #5;
+    im_inst=8'h124678f8;
     is_write=1;
-    pc=8'h10240823;
+    im_addr=8'h10240823;
     
-    
-    #50;
-    
-    is_write=0;
-    im_inst=8'h00000000;
     
     //write
-    #30;
+    #5;
     im_inst=8'h00012567;
     is_write=1;
-    pc=8'h10240143;
+    im_addr=8'h10240143;
     
    
    //read
-    #30;
+    #5;
     re=1;
     is_write=0;
     pc=8'h10240823;
     
     
-    
-    #30;
+    #10;
     re=0;
    
     
