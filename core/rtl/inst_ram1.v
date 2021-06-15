@@ -19,22 +19,28 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module inst_ram1#(
     parameter w=32,
     parameter h=8)(
     clk,
-    inst_data,
+    //read
     pc,
     re,
+    inst_data,
+    //write
     is_write,
-    //im_addr,
-    //ext input
+    im_addr,
+    im_inst);
+ 
+    input clk;
     input wire[w-1:0] im_addr;
     input wire[w-1:0] im_inst;
-    //output[31:0] im_dout;
-    //output[31:0] im_dout2;
-    )
+    input wire[w-1:0] pc;
+    output wire[w-1:0] inst_data;
+    input wire is_write;
+    input wire re;
+    
+    
 
     wire[w-1:0] shifted_addr_pc;
     assign shifted_addr_pc[w-1:0]=pc>>2;
@@ -48,9 +54,10 @@ integer i=0;
 
 always@(posedge clk)
 begin
-    if(is_write)\
+    if(is_write)
     begin
         inst[shifted_addr_load][w-1:0]<=im_inst[w-1:0];
+        
         $display("%h %h %h %h",shifted_addr_pc[w-1:0],shifted_addr_load[w-1:0],im_inst[w-1:0],inst[shifted_addr_load][w-1:0]);
 
     end
@@ -59,3 +66,4 @@ end
 assign inst_data[w-1:0]=(re)?inst[shifted_addr_pc][w-1:0]:2'h00;
 
 endmodule
+
