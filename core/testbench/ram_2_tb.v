@@ -29,6 +29,7 @@ module ram_2_tb;
   //wire  [31:0]ram_dout;
   reg ram_re;
   wire [31:0] data_reg;
+  reg sign;
     
     
     ram_2 uut(
@@ -39,7 +40,8 @@ module ram_2_tb;
     ram_addr,
     //ram_dout,
     ram_re,
-    data_reg
+    data_reg,
+    sign
     );
     
     always 
@@ -47,16 +49,17 @@ module ram_2_tb;
     initial 
     begin
     clk=0;
+    sign=0;
     ram_we=0;
     ram_type=4'b0000;
     ram_addr=8'h00000000;
     ram_re=0;
-    ram_wdat=32'h123DF556;
+    ram_wdat=32'h123DF586;
      #5;
 
     #10;
     ram_we=1;
-    ram_type=4'b0011;
+    ram_type=4'b1111;
     ram_addr=32'h10240043;
     //ram_rd_store=1;
     
@@ -65,12 +68,16 @@ module ram_2_tb;
     ram_type=4'b1111;
     ram_addr=32'h10240003;
     ram_wdat=32'h123DF336;
+    $display(data_reg[31:0]);
     
     #10;
     ram_re=1;
     ram_we=0;
-    ram_type=4'b1111;
+    ram_type=4'b0010;
+    sign=1'b0;
     ram_addr=32'h10240043;
+    #5;
+    $display("%h",data_reg[31:0]);
     
     
     end
