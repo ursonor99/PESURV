@@ -31,17 +31,24 @@ module ram_2 #(
     ram_type,
     ram_addr,
     ram_re,
-    data_reg
+    data_reg,
+    sign
     );
     
 
-    input             clk;
-    input     [w-1:0]  ram_wdat;
-    input             ram_we;
-    input     [l-1:0]   ram_type;
-    input      [w-1:0]  ram_addr;
-    input               ram_re;
-    output     [w-1:0] data_reg;
+    input   wire          clk;
+    input   wire   [w-1:0]  ram_wdat;
+    input   wire          ram_we;
+    input   wire  [l-1:0]   ram_type;
+    input   wire   [w-1:0]  ram_addr;
+    input   wire            ram_re;
+    output  reg     [w-1:0] data_reg;
+    input wire sign;
+    
+
+wire [w-1:0] data;
+
+//wire unsign=1'b1;
 
 wire [h-1:0] address1;
 wire [h-1:0] address2;
@@ -83,28 +90,44 @@ begin
             if(ram_type[3])
                 Bram[address4][h-1:0] <=ram_wdat[4*h-1:3*h];
                 
-            $display(Bram[address1][h-1:0]);
+            $display(Bram[address1]);
            
          end
 
 end
 
 
-    
-
+always@*
     begin:outputk
+    
 //    reg  [w-1:0] douta_reg={w{1'b0}};
-  //always@(posedge clk) 
-  
-    assign data_reg[7:0] = (ram_re && ram_type[0] && Bram[address1])?Bram[address1]:8'b0000000;
-    assign data_reg[15:8]=(ram_re && ram_type[1] && Bram[address2])?Bram[address2]:8'b00000000; 
-    assign data_reg[23:16]=(ram_re && ram_type[2] && Bram[address3])?Bram[address3]:8'b00000000;
-    assign data_reg[31:24]=(ram_re && ram_type[3] && Bram[address4])?Bram[address4]:8'b00000000;
+  //always@(posedge clk)
+    if(sign)
+        begin
+        case(ram_type)  
+                  4'b0001:data_reg[31:0]={{24{Bram[address1][7]}},Bram[address1]};
+                  4'b0010:data_reg[31:0]={{16{Bram[address2][7]}},Bram[address2],Bram[address1]};                                                                         
+                  4'b0100:data_reg[31:0]={{8{Bram[address3][7]}},Bram[address3],Bram[address2],Bram[address1]};                                            
+                  4'b1000:data_reg[31:0]={Bram[address4],Bram[address3],Bram[address2],Bram[address1]};
+         endcase 
+         end        
+   else
+        begin
+        case(ram_type)
+                4'b0001:data_reg[31:0]={24'b0,Bram[address1]};
+                4'b0010:data_reg[31:0]={16'b0,Bram[address2],Bram[address1]};     
+                4'b0100:data_reg[31:0]={8'b0,Bram[address3],Bram[address2],Bram[address1]};
+                4'b1000:data_reg[31:0]={Bram[address4],Bram[address3],Bram[address2],Bram[address1]};                                                             
     
-    
-    end
+        endcase
+   end
+   
+   
+ end
+   
                                                  
 
            
 
 endmodule
+
