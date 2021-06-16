@@ -30,3 +30,10 @@
 `define BR_LTU 5'b01111
 `define BR_GES 5'b10000
 `define BR_GEU 5'b10001
+
+
+//writeback types
+`define WB_NO_DATA 2'b00
+`define WB_RET_ADDR 2'b01
+`define WB_ALU_OUT 2'b10
+`define WB_LOAD_DATA 2'b11

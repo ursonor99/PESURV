@@ -90,7 +90,7 @@ begin
             if(ram_type[3])
                 Bram[address4][h-1:0] <=ram_wdat[4*h-1:3*h];
                 
-            $display(Bram[address1]);
+            //$display(Bram[address1]);
            
          end
 
