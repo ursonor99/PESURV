@@ -223,7 +223,7 @@ alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_o
 //IMM GEN/////////////////////////////////
 
 wire[31:0] imm_out;
-
+IMM_OP uut_imm_gen (inst_rom_out,imm_out);
 
 
 // Adder //////////////////
