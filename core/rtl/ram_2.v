@@ -1,4 +1,6 @@
 `timescale 1ns / 1ps
+`include "GLOBALS.v"
+
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -18,10 +20,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-`define BYTE 4'b0001
-`define HALFWORD 4'b0011
-`define THREEQUATER 4'b0111
-`define FULLWORD 4'b1111
+
 
 module ram_2 #(
     parameter w=32,

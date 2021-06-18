@@ -10,6 +10,13 @@
 `define BR 2'b11
 
 
+//RAM TYPE 
+`define BYTE 4'b0001
+`define HALFWORD 4'b0011
+`define THREEQUATER 4'b0111
+`define FULLWORD 4'b1111
+
+
 // ALU Control Codes 
 `define PASSTHROUGH_RS1 5'b00000
 `define LSL 5'b00001
@@ -37,3 +44,30 @@
 `define WB_RET_ADDR 2'b01
 `define WB_ALU_OUT 2'b10
 `define WB_LOAD_DATA 2'b11
+
+//Function7
+`define FN3_ADD_SUB        3'b000
+`define FN3_SLL            3'b001
+`define FN3_SLT            3'b010
+`define FN3_SLTU           3'b011
+`define FN3_XOR            3'b100
+`define FN3_SRL_SRA        3'b101
+`define FN3_OR             3'b110
+`define FN3_AND            3'b111
+
+`define FN3_BEQ            3'b000
+`define FN3_BNE            3'b001
+`define FN3_BLT            3'b100
+`define FN3_BGE            3'b101
+`define FN3_BLTU           3'b110
+`define FN3_BGEU           3'b111
+
+`define FN3_LB             3'b000
+`define FN3_LH             3'b001
+`define FN3_LW             3'b010
+`define FN3_LBU            3'b100
+`define FN3_LHU            3'B101
+
+`define FN3_SB             3'b000
+`define FN3_SH             3'b001
+`define FN3_SW             3'B010
