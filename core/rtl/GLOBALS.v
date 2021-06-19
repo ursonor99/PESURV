@@ -10,11 +10,6 @@
 `define BR 2'b11
 
 
-//RAM TYPE 
-`define BYTE 4'b0001
-`define HALFWORD 4'b0011
-`define THREEQUATER 4'b0111
-`define FULLWORD 4'b1111
 
 
 // ALU Control Codes 
@@ -71,3 +66,10 @@
 `define FN3_SB             3'b000
 `define FN3_SH             3'b001
 `define FN3_SW             3'B010
+
+
+//RAM TYPE 
+`define BYTE 4'b0001
+`define HALFWORD 4'b0011
+`define THREEQUATER 4'b0111
+`define FULLWORD 4'b1111
