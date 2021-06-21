@@ -159,10 +159,10 @@ wire[31:0] inst_rom_out;
 
 inst_ram1 uut_inst(
 clk,
-inst_rom_out, ///// OUT
 instrom_pc_in,
-instrom_read_en,
-instrom_write_en,
+instrom_read_en,//CTRL
+inst_rom_out, ///// OUT
+instrom_write_en,//CTRL
 inst_mem_addr, /// EXT
 inst_mem_data   /// EXT
 );

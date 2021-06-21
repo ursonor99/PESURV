@@ -38,13 +38,6 @@ wire[32:0] pc_plus4_addr;
 wire[31:0] pc_nxt;
 carry_lookahead_adder uut(.i_add1(o_r_pc),.i_add2(32'h00000004),.o_result(pc_plus4_addr));
 
-initial
-begin
-if (i_writing_first_addr==1'b1)
-    o_r_pc<= i_instr_start_addr;
-else
-    o_r_pc<=32'h00000000;
-end
 
 
 //reset
