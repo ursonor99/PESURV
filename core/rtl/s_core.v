@@ -211,7 +211,7 @@ wire[4:0] ALU_operator;
 wire[31:0] ALU_out;
 wire ALU_br_cond;
 
-alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_output),.o_alu_br_cond(ALU_br_cond));
+alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
 
 
 
@@ -228,21 +228,22 @@ IMM_OP uut_imm_gen (inst_rom_out,imm_out);
 
 // Adder //////////////////
 wire[31:0] adder_in_1;
-wire[31:0] adder_out;
+wire[32:0] cla_adder_out;
 //pc_out
 
-carry_lookahead_adder uut_adder(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(adder_out));
+carry_lookahead_adder uut_adder(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
 
 
-
+wire adder_out;
+assign adder_out=cla_adder_out[31:0];
 
 
 ////BRANCH////////////////////////////////////
 wire[31:0] br_jump_addr ;
-wire[31:0] br_cond_in ;
-wire[3:0] br_type ;  // ctrl 
+wire br_cond_in ;
+wire[1:0] br_type ;  // ctrl 
 wire br_is_branching ;
-wire br_addr ; 
+wire[31:0] br_addr ; 
 
 branch uut_branch (br_cond_in , br_jump_addr , br_type ,br_is_branching, br_addr) ;
 
