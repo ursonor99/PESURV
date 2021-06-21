@@ -111,7 +111,7 @@ input wire[31:0] inst_mem_data,
 input wire[4:0] load_reg_addr,
 input wire[31:0] load_reg_data,
 
-
+input wire setup,
 
 output wire[31:0] o_pc,
 output wire[31:0] o_inst_data,
@@ -276,9 +276,6 @@ ram_2 uut_ram(
     
     
 
-
-    
-    
     
     
 ///////muxes//////////////////////////////////
@@ -308,7 +305,33 @@ assign rd_writeback = writeback_sel == `WB_NO_DATA  ? 32'h00000000 :
 
 
 
+//Ctrl
 
+//input wire setup
+
+control uut_ctrl ( 
+inst_rom_out,
+setup,
+ALU_operator,
+reg_write_en,
+instrom_write_en,
+instrom_read_en,
+br_type,
+i_pc_stall,
+i_pc_writing_first_addr,
+ram_write_en ,
+ram_read_en ,
+ram_type,
+ram_sign,
+op1_select,
+op2_select,
+BR_OR_RETURN_select,
+addr_sel,
+writeback_sel,
+reg_rd_ctrl );
+
+    
+    
 
 
 

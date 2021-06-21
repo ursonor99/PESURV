@@ -35,9 +35,9 @@ output wire MUX_op1_select,
 output wire MUX_op2_select,
 output wire MUX_br_ret_addr_select,
 output wire MUX_br_Addr_sel,
-output wire MUX_writeback 
+output wire[1:0] MUX_writeback ,
 
-
+output wire reg_rd_ctrl
 
     );
     
@@ -140,13 +140,15 @@ output wire MUX_writeback
                                      1'b0 ;
     
     
-    assign MUX_writeback = is_jal || is_jalr || is_lui || is_auipc     ? `WB_RET_ADDR:
-                           is_op || is_op_imm                          ? `WB_ALU_OUT :
-                           is_load                                     ?  `WB_LOAD_DATA :
+    assign MUX_writeback = is_jal || is_jalr                         ? `WB_RET_ADDR:
+                           is_op || is_op_imm ||  is_lui || is_auipc ? `WB_ALU_OUT :
+                           is_load                                   ?  `WB_LOAD_DATA :
                                                                          `WB_NO_DATA ; // is_store , is_branch  
                            
-    
+    assign reg_rd_ctrl =  setup == 1 ? 1'b1 :
+                          1'b0 ;
     
     
     
 endmodule
+
