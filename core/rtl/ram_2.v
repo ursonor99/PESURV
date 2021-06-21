@@ -25,7 +25,7 @@
 module ram_2 #(
     parameter w=32,
     parameter h=8,
-    parameter l=3
+    parameter l=4
     )(
     clk,
     ram_wdat,

@@ -260,7 +260,7 @@ wire ram_write_en ; //ctrl
 wire[3:0] ram_type ;//ctrl
 wire[31:0] ram_addr ;
 wire ram_read_en ;//ctrl
-wire ram_data_out ;
+wire[31:0] ram_data_out ;
 wire ram_sign ;//ctrl
 
 ram_2 uut_ram(
