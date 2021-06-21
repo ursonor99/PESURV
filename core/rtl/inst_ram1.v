@@ -58,7 +58,7 @@ begin
     begin
         inst[shifted_addr_load][w-1:0]<=im_inst[w-1:0];
         
-        $display("%h %h %h %h",shifted_addr_pc[w-1:0],shifted_addr_load[w-1:0],im_inst[w-1:0],inst[shifted_addr_load][w-1:0]);
+        $display("instr_ram : %h %h %h %h",shifted_addr_pc[w-1:0],shifted_addr_load[w-1:0],im_inst[w-1:0],inst[shifted_addr_load][w-1:0]);
 
     end
 
