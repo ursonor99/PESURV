@@ -81,3 +81,7 @@ data_reg=register that has loaded value.
 
 ## To do 
        l shift imm for br instr b4 jump address is calculated 
+
+
+
+okay fine brooooo cool
