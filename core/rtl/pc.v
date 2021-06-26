@@ -48,7 +48,9 @@ always@(negedge i_rst_n) o_r_pc<=32'h00000000;
 always@(posedge i_clk) 
 begin
 if (i_stall==0)
+
     o_r_pc<=pc_nxt;
+    $display("PC : %h %h %h",o_r_pc,i_writing_first_addr,pc_plus4_addr[31:0]);
 end
 
 

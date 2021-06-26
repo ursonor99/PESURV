@@ -67,15 +67,20 @@ begin
 rst_n=1;
 clk=0;
 setup=1;
-i_pc_instr_start_addr=32'h00004848;
-inst_mem_addr=32'h00004848;
+
+inst_mem_addr=32'h00000004;
 inst_mem_data=32'b00000000000100100111010000010011;  //and immediate
 load_reg_addr=5'b00100;  //rs1
 load_reg_data=32'h00000001;  
 
 #10
+inst_mem_addr=32'h00000008;
+inst_mem_data=32'b00000000011000100000100010110011;
+load_reg_addr=5'b00110;  //rs2
+load_reg_data=32'h00000001;  
+i_pc_instr_start_addr=32'h00000004;
+#10
 setup=0;
-i_pc_instr_start_addr=32'h00004848;
 
 #40
 $finish;
