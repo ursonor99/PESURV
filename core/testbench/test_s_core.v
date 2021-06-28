@@ -92,8 +92,19 @@ inst_mem_data=32'b10000000000010101010100100110111;//lui
 inst_mem_addr=16;
 inst_mem_data=32'b00000000001000100010100110010111;//auipc
 
-#40
+#10
+inst_mem_addr=20;
+inst_mem_data=32'b00000001111000000000101111101111;//jal
 
+#10
+inst_mem_addr=32'h00000032;
+inst_mem_data=32'b00000001001000110000101010110011;//add
+#10
+i_pc_instr_start_addr=32'h00000004;
+
+#5
+setup=0;
+#200
 $finish;
 end
 endmodule
