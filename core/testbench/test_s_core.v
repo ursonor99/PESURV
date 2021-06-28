@@ -99,6 +99,16 @@ inst_mem_data=32'b00000001111000000000101111101111;//jal
 #10
 inst_mem_addr=32'h00000032;
 inst_mem_data=32'b00000001001000110000101010110011;//add
+
+#10
+inst_mem_addr=36;
+inst_mem_data=32'b00000001000101110010000000100011;  //str
+load_reg_addr=5'b10001;                             //rs1
+load_reg_data=32'h00000111;                  //rs2=10001 rs1=01110
+
+#10
+inst_mem_addr=40;
+inst_mem_data=32'b00000000000001110010011000000011;     //load                //src=01110  dst=01100
 #10
 i_pc_instr_start_addr=32'h00000004;
 
