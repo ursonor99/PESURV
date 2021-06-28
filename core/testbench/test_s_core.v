@@ -78,11 +78,25 @@ inst_mem_addr=32'h00000008;
 inst_mem_data=32'b00000000011000100000100010110011;
 load_reg_addr=5'b00110;  //rs2
 load_reg_data=32'h00000001;  
-i_pc_instr_start_addr=32'h00000004;
+
+#10
+
+setup=0;
+#10;
+setup=1;
+inst_mem_addr=32'h0000000c;
+inst_mem_data=32'b00000000011001110010000000100011; //src 00110 dst 01110 
+#10;
+inst_mem_addr=32'h00000010;
+inst_mem_data=32'b0000000000001110010000110000011;  
+i_pc_instr_start_addr=32'h00000004;              //imm=0000000 src 01110 drst 00011
+//load_reg_addr=5'b00010;
+//load_reg_data=32'h00000111;
 #10
 setup=0;
 
 #40
+
 $finish;
 end
 endmodule
