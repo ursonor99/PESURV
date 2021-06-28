@@ -34,6 +34,7 @@ wire[31:0] o_pc;
 wire[31:0] o_inst_data;
 wire[31:0] o_rs1_data;
 wire[31:0] o_rs2_data;
+wire[31:0] o_imm_out;
 wire[31:0] o_ALU_out;
 wire o_ALU_br_cond;
 wire[31:0] o_RAM_data_out;
@@ -54,6 +55,7 @@ o_pc,
 o_inst_data,
 o_rs1_data,
 o_rs2_data,
+o_imm_out,
 o_ALU_out,
 o_ALU_br_cond,
 o_RAM_data_out
@@ -72,13 +74,24 @@ inst_mem_addr=32'h00000004;
 inst_mem_data=32'b00000000000100100111010000010011;  //and immediate
 load_reg_addr=5'b00100;  //rs1
 load_reg_data=32'h00000001;  
-
 #10
 inst_mem_addr=32'h00000008;
 inst_mem_data=32'b00000000011000100000100010110011;
 load_reg_addr=5'b00110;  //rs2
 load_reg_data=32'h00000001;  
+
+#10
+inst_mem_addr=32'h0000000c;
+inst_mem_data=32'b10000000000010101010100100110111;
+
+#10
+
+inst_mem_addr=16;
+inst_mem_data=32'b00000000001000100010100110010111;
+
+#10
 i_pc_instr_start_addr=32'h00000004;
+
 #10
 setup=0;
 

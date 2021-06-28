@@ -117,6 +117,7 @@ output wire[31:0] o_pc,
 output wire[31:0] o_inst_data,
 output wire[31:0] o_rs1_data,
 output wire[31:0] o_rs2_data,
+output wire[31:0] o_imm_out,
 output wire[31:0] o_ALU_out,
 output wire o_ALU_br_cond,
 output wire[31:0] o_RAM_data_out
@@ -372,5 +373,10 @@ assign i_pc_branch_addr = br_addr;
 assign o_RAM_data_out = ram_data_out;
 assign ram_write_data_in = rs2_data ; 
 assign ram_addr = ALU_out ;
-// to do writeback control 
+
+//imm gen
+assign o_imm_out = imm_out ;
+
+
+
 endmodule
