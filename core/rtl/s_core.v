@@ -120,7 +120,9 @@ output wire[31:0] o_rs2_data,
 output wire[31:0] o_imm_out,
 output wire[31:0] o_ALU_out,
 output wire o_ALU_br_cond,
-output wire[31:0] o_RAM_data_out
+output wire[31:0] o_RAM_data_out,
+output wire[1:0] o_writeback_sel,
+output wire[31:0] o_rd_writeback
 );
 
 
@@ -299,8 +301,7 @@ assign br_jump_addr = addr_sel==1 ? adder_out : ALU_out;
 /////writeback///
 wire[1:0] writeback_sel;
 wire rd_writeback;
-assign rd_writeback = writeback_sel == `WB_NO_DATA  ? 32'h00000000 :
-                      writeback_sel == `WB_RET_ADDR ? adder_out    :
+assign rd_writeback = writeback_sel == `WB_RET_ADDR ? adder_out    :
                       writeback_sel == `WB_ALU_OUT  ? ALU_out      :
                       writeback_sel == `WB_LOAD_DATA? ram_data_out : 32'b0 ;
 
@@ -376,7 +377,7 @@ assign ram_addr = ALU_out ;
 
 //imm gen
 assign o_imm_out = imm_out ;
-
-
-
+//wb
+assign o_rd_writeback = rd_writeback;
+assign o_writeback_sel=writeback_sel;
 endmodule

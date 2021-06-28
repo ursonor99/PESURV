@@ -38,7 +38,8 @@ wire[31:0] o_imm_out;
 wire[31:0] o_ALU_out;
 wire o_ALU_br_cond;
 wire[31:0] o_RAM_data_out;
-
+wire[1:0] o_writeback_sel;
+wire[31:0] o_rd_writeback;
 
 
 s_core uut(
@@ -58,7 +59,9 @@ o_rs2_data,
 o_imm_out,
 o_ALU_out,
 o_ALU_br_cond,
-o_RAM_data_out
+o_RAM_data_out,
+o_writeback_sel,
+ o_rd_writeback
 );
 
 
@@ -76,26 +79,32 @@ load_reg_addr=5'b00100;  //rs1
 load_reg_data=32'h00000001;  
 #10
 inst_mem_addr=32'h00000008;
-inst_mem_data=32'b00000000011000100000100010110011;
+inst_mem_data=32'b00000000011000100000100010110011;//addition
 load_reg_addr=5'b00110;  //rs2
 load_reg_data=32'h00000001;  
 
 #10
 inst_mem_addr=32'h0000000c;
-inst_mem_data=32'b10000000000010101010100100110111;
+inst_mem_data=32'b10000000000010101010100100110111;//lui 
 
 #10
 
 inst_mem_addr=16;
-inst_mem_data=32'b00000000001000100010100110010111;
+inst_mem_data=32'b00000000001000100010100110010111;//auipc
 
+#10
+inst_mem_addr=20;
+inst_mem_data=32'b00000001111000000000101111101111;//jal
+
+#10
+inst_mem_addr=32'h00000032;
+inst_mem_data=32'b00000001001000110000101010110011;//add
 #10
 i_pc_instr_start_addr=32'h00000004;
 
-#10
+#5
 setup=0;
-
-#40
+#200
 $finish;
 end
 endmodule
