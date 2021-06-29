@@ -50,19 +50,19 @@ module ram_2 #(
 
 
 
-
 //wire unsign=1'b1;
 
-wire [h-1:0] address1;
-wire [h-1:0] address2;
-wire [h-1:0] address3;
-wire [h-1:0] address4;
+
 
  
 (* ram_style = "block" *)reg [h-1:0] Bram [2**h-1:0];
 //reg [w-1:0] ram_data={w{1'b0}};
 //always@(posedge clk)
 
+wire [h-1:0] address1;
+wire [h-1:0] address2;
+wire [h-1:0] address3;
+wire [h-1:0] address4;
 assign address1 = ram_addr+1'b0;
 assign  address2 =ram_addr+1'b1;
 assign address3=ram_addr+2'b10;
@@ -93,7 +93,7 @@ begin
             if(ram_type[3])
                 Bram[address4]<=ram_wdat[4*h-1:3*h];
                 
-            //$display(Bram[address1]);
+            $display("ram2= %h %h %b %b %b %b ",{Bram[address4],Bram[address3],Bram[address2],Bram[address1]},address1,ram_type[3:0],ram_we,ram_re,sign);
            
          end
 
@@ -131,20 +131,20 @@ wire [w-1:0]fullword;
 assign signedbyte={{24{data1[7]}},data1};
 assign unsignedbyte={24'b0,data1};
 assign signedhalfword={16'b0,data2,data1};
-assign unsignedbyte={16'b0,data2,data1};
+assign unsignedhalfword={{16{data2[7]}},data2,data1};
 assign signedthreequaters={{8{data3[7]}},data3,data2,data1};
 assign unsignedthreequaters={8'b0,data3,data2,data1};
-assign unsignedbyte={data4,data3,data2,data1};
+assign fullword={data4,data3,data2,data1};
 
 
-assign data_reg=(sign==1 && ram_type==`BYTE)?signedbyte:
-                (sign==0 && ram_type==`BYTE)?unsignedbyte:
-                (sign==1 && ram_type==`HALFWORD)?signedhalfword:
-                (sign==0 && ram_type==`HALFWORD)?unsignedhalfword:
-                (sign==1 && ram_type==`THREEQUATER)?unsignedthreequaters:
-                (sign==0 && ram_type==`THREEQUATER)?signedthreequaters:
-                (sign==0 || sign==1 &&ram_type==`FULLWORD)?fullword:
-                32'b0;
+assign data_reg=(sign==1 && ram_type==`BYTE && ram_re==1)?signedbyte:
+                (sign==0 && ram_type==`BYTE && ram_re==1)?unsignedbyte:
+                (sign==1 && ram_type==`HALFWORD && ram_re==1)?signedhalfword:
+                (sign==0 && ram_type==`HALFWORD && ram_re==1)?unsignedhalfword:
+                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
+                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+                ((sign==0 || sign==1) && ram_type==`FULLWORD && ram_re==1)?fullword:
+                32'h0;
 
 
 

@@ -122,8 +122,8 @@ output wire reg_rd_ctrl
                            1'b0 ;
     assign RAM_ram_type = (is_load && `FN3_LB)|| (is_load && `FN3_LBU) || (is_store && `FN3_SB)  ?  `BYTE :
                           (is_load && `FN3_LH)|| (is_load && `FN3_LHU) || (is_store && `FN3_SH)  ?  `HALFWORD :
-                          (is_load && `FN3_LW)                                                   ?  `FULLWORD :
-                          5'b00000 ; 
+                          (is_load && `FN3_LW)|| (is_store && `FN3_SW) ?  `FULLWORD :
+                          4'b0000 ; 
     assign RAM_sign    = (is_load && `FN3_LBU) || (is_load && `FN3_LHU) ? 1'b0 : 
                           1'b1 ;
                           

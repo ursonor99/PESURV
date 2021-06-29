@@ -72,7 +72,7 @@ begin
 rst_n=1;
 clk=0;
 setup=1;
-
+#10
 inst_mem_addr=32'h00000004;
 inst_mem_data=32'b00000000000100100111010000010011;  //and immediate
 load_reg_addr=5'b00100;  //rs1
@@ -101,14 +101,15 @@ inst_mem_addr=32'h00000032;
 inst_mem_data=32'b00000001001000110000101010110011;//add
 
 #10
-inst_mem_addr=36;
-inst_mem_data=32'b00000001000101110010000000100011;  //str
-load_reg_addr=5'b10001;                             //rs1
-load_reg_data=32'h00000111;                  //rs2=10001 rs1=01110
+load_reg_addr=5'b00100;                             //rs1
+load_reg_data=32'h10101011; 
+inst_mem_addr=32'h00000036;
+inst_mem_data=32'b00000000010000110010000000100011;  //str
+                 //rs2=00100 rs1=00110
 
 #10
-inst_mem_addr=40;
-inst_mem_data=32'b00000000000001110010011000000011;     //load                //src=01110  dst=01100
+inst_mem_addr=32'h0000003a;
+inst_mem_data=32'b00000000000000110010011000000011;     //load                //src=00110  dst=01100
 #10
 i_pc_instr_start_addr=32'h00000004;
 
