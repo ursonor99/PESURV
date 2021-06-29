@@ -61,11 +61,11 @@
 `define FN3_LH             3'b001
 `define FN3_LW             3'b010
 `define FN3_LBU            3'b100
-`define FN3_LHU            3'B101
+`define FN3_LHU            3'b101
 
 `define FN3_SB             3'b000
 `define FN3_SH             3'b001
-`define FN3_SW             3'B010
+`define FN3_SW             3'b010
 
 
 //RAM TYPE 

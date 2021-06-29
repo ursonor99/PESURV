@@ -43,11 +43,11 @@ output wire[31:0] o_rs2_data
     
     
     integer i;
-    initial
-        begin
-            for(i=1;i<32;i=i+1)
-                reg_x[i]<=32'b0;  
-        end
+//    initial
+//        begin
+//            for(i=1;i<32;i=i+1)
+//                reg_x[i]<=32'b0;  
+//        end
         
         
         
@@ -66,6 +66,8 @@ output wire[31:0] o_rs2_data
     begin
     if(i_write_en==1'b1 &&  i_rd_addr != 5'b00000)
             reg_x[i_rd_addr]<=i_rd_data;
+            $display("writing to reg address %h the value %h",i_rd_addr,reg_x[i_rd_addr]);
+            
         
     end
     

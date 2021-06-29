@@ -35,9 +35,9 @@ output wire MUX_op1_select,
 output wire MUX_op2_select,
 output wire MUX_br_ret_addr_select,
 output wire MUX_br_Addr_sel,
-output wire[1:0] MUX_writeback ,
+output wire[1:0] MUX_writeback 
 
-output wire reg_rd_ctrl
+
 
     );
     
@@ -120,10 +120,10 @@ output wire reg_rd_ctrl
     
     assign RAM_read_en  = is_load ? 1'b1 :
                            1'b0 ;
-    assign RAM_ram_type = (is_load && `FN3_LB)|| (is_load && `FN3_LBU) || (is_store && `FN3_SB)  ?  `BYTE :
-                          (is_load && `FN3_LH)|| (is_load && `FN3_LHU) || (is_store && `FN3_SH)  ?  `HALFWORD :
-                          (is_load && `FN3_LW)                                                   ?  `FULLWORD :
-                          5'b00000 ; 
+    assign RAM_ram_type = (is_load && FN3==`FN3_LB)|| (is_load && FN3==`FN3_LBU) || (is_store && FN3==`FN3_SB)  ?  `BYTE :
+                          (is_load && FN3==`FN3_LH)|| (is_load && FN3==`FN3_LHU) || (is_store && FN3==`FN3_SH)  ?  `HALFWORD :
+                          (is_load && FN3==`FN3_LW)  || (is_store && FN3==`FN3_SW)                         ?  `FULLWORD :
+                          4'b00000 ; 
     assign RAM_sign    = (is_load && `FN3_LBU) || (is_load && `FN3_LHU) ? 1'b0 : 
                           1'b1 ;
                           
@@ -145,8 +145,7 @@ output wire reg_rd_ctrl
                            is_load                                   ?  `WB_LOAD_DATA :
                                                                          `WB_NO_DATA ; // is_store , is_branch  
                            
-    assign reg_rd_ctrl =  setup == 1 ? 1'b1 :
-                          1'b0 ;
+    
     
     
     
