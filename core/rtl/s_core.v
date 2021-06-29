@@ -303,7 +303,7 @@ wire[1:0] writeback_sel;
 wire[31:0] rd_writeback;
 assign rd_writeback = writeback_sel == `WB_RET_ADDR ? adder_out    :
                       writeback_sel == `WB_ALU_OUT  ? ALU_out      :
-                      writeback_sel == `WB_LOAD_DATA? ram_data_out : 32'h00000000 ;
+                      writeback_sel == `WB_LOAD_DATA? ram_data_out : 32'b0 ;
 
 
 
@@ -330,8 +330,8 @@ op1_select,
 op2_select,
 BR_OR_RETURN_select,
 addr_sel,
-writeback_sel,
-reg_rd_ctrl );
+writeback_sel
+ );
 
     
     
