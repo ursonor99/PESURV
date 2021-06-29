@@ -43,11 +43,11 @@ output wire[31:0] o_rs2_data
     
     
     integer i;
-    initial
-        begin
-            for(i=1;i<32;i=i+1)
-                reg_x[i]<=32'b0;  
-        end
+//    initial
+//        begin
+//            for(i=1;i<32;i=i+1)
+//                reg_x[i]<=32'b0;  
+//        end
         
         
         
