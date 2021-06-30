@@ -53,8 +53,8 @@ assign sub_val = r_substract_out[31:0];
 assign and_val = i_alu_operand_1 & i_alu_operand_2;
 assign or_val = i_alu_operand_1 | i_alu_operand_2;
 assign xor_val = i_alu_operand_1 ^ i_alu_operand_2;
-assign slt_val = i_alu_operand_1 < i_alu_operand_2;
-assign sltu_val = $signed(i_alu_operand_1) < $signed(i_alu_operand_2);
+assign sltu_val = i_alu_operand_1 < i_alu_operand_2;
+assign slt_val = $signed(i_alu_operand_1) < $signed(i_alu_operand_2);
 
 
 assign o_alu_output = i_alu_operator == `PASSTHROUGH_RS1 ? i_alu_operand_1 :

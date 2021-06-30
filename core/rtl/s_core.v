@@ -119,7 +119,9 @@ output wire[31:0] o_rs1_data,
 output wire[31:0] o_rs2_data,
 output wire[31:0] o_imm_out,
 output wire[31:0] o_ALU_out,
+output wire[31:0] o_adder_out,
 output wire o_ALU_br_cond,
+output wire[31:0] o_br_jump_addr,
 output wire[31:0] o_RAM_data_out,
 output wire[1:0] o_writeback_sel,
 output wire[31:0] o_rd_writeback
@@ -237,10 +239,10 @@ wire[32:0] cla_adder_out;
 carry_lookahead_adder uut_adder(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
 
 
-wire adder_out;
+wire[31:0] adder_out;
 assign adder_out=cla_adder_out[31:0];
 
-
+assign o_adder_out = adder_out;
 ////BRANCH////////////////////////////////////
 wire[31:0] br_jump_addr ;
 wire br_cond_in ;
@@ -251,7 +253,7 @@ wire[31:0] br_addr ;
 branch uut_branch (br_cond_in , br_jump_addr , br_type ,br_is_branching, br_addr) ;
 
 
-
+assign o_br_jump_addr = br_addr ;
 
 
 
@@ -291,7 +293,7 @@ assign ALU_input_2 = op2_select==1 ? rs2_data : imm_out ;
 
 wire BR_OR_RETURN_select;
 //return address or br addr select
-assign adder_in_1 = BR_OR_RETURN_select==1 ? 32'h00000004 : imm_out ; 
+assign adder_in_1 = BR_OR_RETURN_select==1 ? imm_out : 32'h00000004 ; 
 
 
 wire addr_sel;
