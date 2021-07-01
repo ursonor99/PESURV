@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 `include "GLOBALS.v"
 
@@ -77,21 +78,21 @@ always@(posedge clk)
 begin
         if(ram_we)begin
             if(ram_type[0])
-                Bram[address1]<=ram_wdat[h-1:0];
+                Bram[address1]=ram_wdat[h-1:0];
              
                 
             if(ram_type[1])
-                Bram[address2]<= ram_wdat[2*h-1:h];
+                Bram[address2]= ram_wdat[2*h-1:h];
                 
            
 
             if(ram_type[2])
-                Bram[address3]<=ram_wdat[3*h-1:2*h];
+                Bram[address3]=ram_wdat[3*h-1:2*h];
                 
             
 
             if(ram_type[3])
-                Bram[address4]<=ram_wdat[4*h-1:3*h];
+                Bram[address4]=ram_wdat[4*h-1:3*h];
                 
             //$display(Bram[address1]);
            
@@ -101,15 +102,17 @@ end
 
 
 //read
-wire [h-1:0] data1;
-assign data1=Bram[address1];
-wire [h-1:0] data2;
-assign data2=Bram[address2];
-wire [h-1:0] data3;
-assign data3=Bram[address3];
-wire [h-1:0] data4;
-assign data4=Bram[address4];
-
+reg[h-1:0] data1;
+reg[h-1:0] data2;
+reg[h-1:0] data3;
+reg[h-1:0] data4;
+always @(address1 || address2 || address3 || address4 || ram_re)
+begin
+data1=Bram[address1];
+data2=Bram[address2];
+data3=Bram[address3];
+data4=Bram[address4];
+end
 /////////////////////////////////////////////////////////////////////////////////////////
 //byte
 wire [w-1:0]signedbyte;
@@ -155,4 +158,5 @@ assign data_reg=(sign==1 && ram_type==`BYTE && ram_re==1)?signedbyte:
            
 
 endmodule
+
 
