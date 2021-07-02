@@ -133,8 +133,8 @@ wire [w-1:0]fullword;
 //sign extension
 assign signedbyte={{24{data1[7]}},data1};
 assign unsignedbyte={24'b0,data1};
-assign signedhalfword={16'b0,data2,data1};
-assign unsignedhalfword={{16{data2[7]}},data2,data1};
+assign signedhalfword={{16{data2[7]}},data2,data1};           
+assign unsignedhalfword={16'b0,data2,data1};
 assign signedthreequaters={{8{data3[7]}},data3,data2,data1};
 assign unsignedthreequaters={8'b0,data3,data2,data1};
 assign fullword={data4,data3,data2,data1};
@@ -144,8 +144,8 @@ assign data_reg=(sign==1 && ram_type==`BYTE && ram_re==1)?signedbyte:
                 (sign==0 && ram_type==`BYTE && ram_re==1)?unsignedbyte:
                 (sign==1 && ram_type==`HALFWORD && ram_re==1)?signedhalfword:
                 (sign==0 && ram_type==`HALFWORD && ram_re==1)?unsignedhalfword:
-                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
-                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
                 ((sign==0 || sign==1) && ram_type==`FULLWORD && ram_re==1)?fullword:
                 32'h0;
 
