@@ -330,7 +330,8 @@ op1_select,
 op2_select,
 BR_OR_RETURN_select,
 addr_sel,
-writeback_sel
+writeback_sel,
+reg_rd_ctrl
  );
 
     

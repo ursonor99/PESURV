@@ -141,8 +141,8 @@ assign data_reg=(sign==1 && ram_type==`BYTE && ram_re==1)?signedbyte:
                 (sign==0 && ram_type==`BYTE && ram_re==1)?unsignedbyte:
                 (sign==1 && ram_type==`HALFWORD && ram_re==1)?signedhalfword:
                 (sign==0 && ram_type==`HALFWORD && ram_re==1)?unsignedhalfword:
-                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
-                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
                 ((sign==0 || sign==1) && ram_type==`FULLWORD && ram_re==1)?fullword:
                 32'h0;
 
