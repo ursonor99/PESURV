@@ -24,15 +24,12 @@ assign jalr_jump_addr = {i_jump_br_addr[31:1],1'b0};
 assign o_is_branching = i_br_type== `NONE ? 1'b0 :  
                                             i_br_type== `JAL ? 1'b1 : 
                                                                i_br_type== `JALR ?  1'b1 :  
-                                                                                    i_branch_cond==1'b1 ? 1'b1:
-                                                                                                          1'b0;
-
+                                                                                    i_br_type==`BR && i_branch_cond==1'b1 ? 1'b1:
+                                                                                                                            1'b0;
 assign o_branch_addr = 
                         i_br_type== `JAL ? i_jump_br_addr : 
                                             i_br_type== `JALR ? jalr_jump_addr :  
-                                                                i_branch_cond==`BR ?  i_branch_cond==1'b1 ? i_jump_br_addr:
-                                                                                                            32'b0
-                                                                                      :32'b0  ;
+                                                                i_br_type==`BR && i_branch_cond==1 ?   i_jump_br_addr: 32'b0  ;
 
 
 

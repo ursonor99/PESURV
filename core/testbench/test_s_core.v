@@ -36,7 +36,9 @@ wire[31:0] o_rs1_data;
 wire[31:0] o_rs2_data;
 wire[31:0] o_imm_out;
 wire[31:0] o_ALU_out;
+wire[31:0] o_adder_out;
 wire o_ALU_br_cond;
+wire[31:0] o_br_jump_addr;
 wire[31:0] o_RAM_data_out;
 wire[1:0] o_writeback_sel;
 wire[31:0] o_rd_writeback;
@@ -58,7 +60,9 @@ o_rs1_data,
 o_rs2_data,
 o_imm_out,
 o_ALU_out,
+o_adder_out,
 o_ALU_br_cond,
+o_br_jump_addr,
 o_RAM_data_out,
 o_writeback_sel,
  o_rd_writeback
@@ -111,6 +115,28 @@ inst_mem_data=32'b00000001000100110010000000100011;  //str
 #10
 inst_mem_addr=32'h0000003a;
 inst_mem_data=32'b00000000000000110010011000000011;     //load                //src=00110  dst=01100
+
+
+#10
+inst_mem_addr=32'h0000003e;
+inst_mem_data=32'b00000000010000000000000110010011; //loading data to 00011 reg
+
+
+
+//#10
+//inst_mem_addr=32'h00000042;
+//inst_mem_data=32'b00000000010000011000110001100111; // jalr to pc 8 
+
+#10
+
+
+inst_mem_addr=32'h00000042;
+inst_mem_data=32'b00000000110000000000001000010011; //loading data 4 to 00100 reg
+
+#10
+inst_mem_addr=32'h00000046;        ///
+inst_mem_data=32'b00000000001100100101100001100011; 
+
 
 
 #5
