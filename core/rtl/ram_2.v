@@ -106,7 +106,7 @@ reg[h-1:0] data1;
 reg[h-1:0] data2;
 reg[h-1:0] data3;
 reg[h-1:0] data4;
-always @(address1 || address2 || address3 || address4 || ram_re)
+always @(*)
 begin
 data1=Bram[address1];
 data2=Bram[address2];
