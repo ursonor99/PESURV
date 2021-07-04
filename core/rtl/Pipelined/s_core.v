@@ -293,6 +293,8 @@ assign ALU_input_2 = op2_select==1 ? rs2_data : imm_out ;
 
 wire BR_OR_RETURN_select;
 //return address or br addr select
+//wire[31:0] signed_addition_immediate ;
+//assign signed_addition_immediate = imm_out[31]==0? imm_out : ((~imm_out)+1) ;
 assign adder_in_1 = BR_OR_RETURN_select==1 ? imm_out : 32'h00000004 ; 
 
 
