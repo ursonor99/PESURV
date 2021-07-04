@@ -60,8 +60,8 @@ module ram_2_tb;
     ram_we=1;
     sign=0;
     ram_type=4'b1111;
-    ram_wdat=32'h10101011;
-    ram_addr=32'h00000001;
+    ram_wdat=32'h00000011;
+    ram_addr=32'h00000004;
     //ram_rd_store=1;
     
     //write
@@ -69,16 +69,16 @@ module ram_2_tb;
     ram_we=1;
     sign=0;
     ram_type=4'b1111;
-    ram_wdat=32'h11000011;
-    ram_addr=32'h10000101;
+    ram_wdat=32'h00000100;
+    ram_addr=32'h00000040;
     
     //write
     #10;
     ram_we=1;
     sign=0;
     ram_type=4'b1111;
-    ram_wdat=32'h110abc11;
-    ram_addr=32'h000006ac;
+    ram_wdat=32'h000000b4;
+    ram_addr=32'h00000044;
     
     //read word 
     #10;
@@ -86,7 +86,7 @@ module ram_2_tb;
     ram_re=1;
     ram_type=4'b1111;
     sign=0;
-    ram_addr=32'h10000101;
+    ram_addr=32'h00000004;
     
     
     //write halfword
@@ -95,24 +95,24 @@ module ram_2_tb;
     ram_we=1;
     sign=0;
     ram_type=4'b0011;
-    ram_wdat=32'habcabcab;
-    ram_addr=32'h12312312;
+    ram_wdat=32'h000000ab;
+    ram_addr=32'h00000022;
     
     //write 3 quater
     #10;
     ram_we=1;
     sign=0;
     ram_type=4'b0111;
-    ram_wdat=32'hdefdefde;
-    ram_addr=32'h45645645;
+    ram_wdat=32'h000000de;
+    ram_addr=32'h00000045;
     
     //write byte
     #10;
     ram_we=1;
     sign=0;
     ram_type=4'b0001;
-    ram_wdat=32'h00011111;
-    ram_addr=32'h22222222;
+    ram_wdat=32'h000000c1;
+    ram_addr=32'h0000000d;
     
     //read halfword 
     #10;
@@ -120,7 +120,7 @@ module ram_2_tb;
     ram_re=1;
     ram_type=4'b0011;
     sign=1;
-    ram_addr=32'h12312312;
+    ram_addr=32'h00000022;
     
     //read 3 quater
     #10;
@@ -128,7 +128,7 @@ module ram_2_tb;
     ram_re=1;
     ram_type=4'b0111;
     sign=1;
-    ram_addr=32'h45645645;
+    ram_addr=32'h00000045;
     
     //read byte
     #10;
@@ -136,7 +136,7 @@ module ram_2_tb;
     ram_re=1;
     ram_type=4'b0001;
     sign=1;
-    ram_addr=32'h22222222;
+    ram_addr=32'h0000000d;
 
     #100;
     $finish;
