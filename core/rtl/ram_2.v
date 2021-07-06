@@ -190,23 +190,20 @@ wire[31:0] ram_word_aligned_addr;
 wire[1:0] ram_word__position;
 assign ram_word_aligned_addr = {2'b00,ram_addr[31:2]};
 assign ram_word__position=ram_addr[1:0];
-//wire unsign=1'b1;
 
-//wire [h-1:0] address1;
-//wire [h-1:0] address2;
-//wire [h-1:0] address3;
-//wire [h-1:0] address4;
 
- 
-(* ram_style = "block" *)reg [w-1:0] Bram [2**10:0];
+reg [3 : 0] wea;
+reg [31 : 0] dina; 
+wire[31:0] data_read ;
+blk_mem_gen_0 bram_isnt (
+  .clka(clk),    // input wire clk
+  .wea(wea),      // input wire [3 : 0] wea
+  .addra(ram_word_aligned_addr),  // input wire [31 : 0] addra
+  .dina(dina),    // input wire [31 : 0] 
+  .douta(data_read)  // wire[31:0] data_read ;
+);
 
-//reg [w-1:0] ram_data={w{1'b0}};
-//always@(posedge clk)
 
-//assign address1 = ram_addr+1'b0;
-//assign  address2 =ram_addr+1'b1;
-//assign address3=ram_addr+2'b10;
-//assign address4=ram_addr+2'b11;
 
 
 //memory_misalignment_exception 
@@ -229,24 +226,47 @@ begin
 if (memory_address_misaligned==1'b0)
 begin
             if(ram_we && ram_type==`FULLWORD)
-                Bram[ram_word_aligned_addr]=ram_wdat;
-             
+            begin
+                wea=4'b1111;
+                dina=ram_wdat;
+             end
                 
-            if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 )
-                Bram[ram_word_aligned_addr][2*h-1:0]= ram_wdat[2*h-1:0];
-                
-            if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 )
-                Bram[ram_word_aligned_addr][4*h-1:2*h]= ram_wdat[2*h-1:0];    
-           
+            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 )
+            begin
+                wea=4'b0011;
+                dina=ram_wdat;
+            end    
+            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 )
+            begin    
+                wea=4'b1100;
+                dina[4*h-1:2*h]= ram_wdat[2*h-1:0];    
+           end
 
-            if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b00)
-                Bram[ram_word_aligned_addr][h-1:0]=ram_wdat[h-1:0];               
-            if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b01)
-                Bram[ram_word_aligned_addr][2*h-1:h]=ram_wdat[h-1:0];
-            if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b10)
-                Bram[ram_word_aligned_addr][3*h-1:2*h]=ram_wdat[h-1:0];
-            if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b11)
-                Bram[ram_word_aligned_addr][4*h-1:3*h]=ram_wdat[h-1:0];
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b00)
+                begin
+                dina[h-1:0]=ram_wdat[h-1:0]; 
+                wea=4'b0001;
+                end              
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b01)
+            begin
+                dina[2*h-1:h]=ram_wdat[h-1:0];
+                wea=4'b0010;
+            end    
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b10)
+            begin
+                dina[3*h-1:2*h]=ram_wdat[h-1:0];
+                wea=4'b0100;
+            end
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b11)
+            begin
+                dina[4*h-1:3*h]=ram_wdat[h-1:0];
+                wea=4'b1000;
+            end
+            else 
+                begin
+                    dina=0;
+                    wea=0;
+                end
 end
            //$display("ram2= %h %h %b %b %b %b ",{Bram[address4],Bram[address3],Bram[address2],Bram[address1]},address1,ram_type[3:0],ram_we,ram_re,sign);
 
@@ -262,7 +282,7 @@ wire[h-1:0] data4;
 //begin
 
 //end
-wire[31:0] data_read = Bram[ram_word_aligned_addr];
+
 assign data1 = ram_type==`FULLWORD || (ram_type==`HALFWORD && ram_word__position==2'b00) || (ram_type==`BYTE && ram_word__position==2'b00)  ? data_read[h-1:0] :
                ram_type==`BYTE && ram_word__position==2'b01 ? data_read[2*h-1:h] :
                ram_type==`HALFWORD && ram_word__position==2'b10 || (ram_type==`BYTE && ram_word__position==2'b10)? data_read[3*h-1:2*h] :

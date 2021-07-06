@@ -131,7 +131,7 @@ module ram_2_tb;
     ram_type=4'b0011;
     sign=1;
     ram_wdat=32'h0000f0f0;
-    ram_addr=32'h00000041;
+    ram_addr=32'h00000040;
     
     
 //    //write byte 
@@ -140,7 +140,7 @@ module ram_2_tb;
     ram_re=0;
     ram_type=4'b0001;
     sign=1;
-    ram_wdat=32'h000000ee;
+    ram_wdat=32'h000000ff;
     ram_addr=32'h00000042;
 
 // read halfword
@@ -158,7 +158,7 @@ module ram_2_tb;
     ram_we=0;
     ram_re=1;
     ram_type=4'b0001;
-    sign=0;
+    sign=1;
     ram_addr=32'h00000042;
 
 //    //read fullword
