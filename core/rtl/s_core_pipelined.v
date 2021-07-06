@@ -3,7 +3,7 @@
 
 
 
-module s_core(
+module s_core_pipelined(
 input wire clk ,
 input wire rst_n,
 
