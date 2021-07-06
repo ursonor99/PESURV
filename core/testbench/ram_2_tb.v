@@ -113,8 +113,8 @@ module ram_2_tb;
     ram_we=1;
     sign=0;
     ram_type=4'b1111;
-    ram_wdat=32'h000000c1;
-    ram_addr=32'h00000003;
+    ram_wdat=32'h00001101;
+    ram_addr=32'h00000004;
     
 //    //read fullword
     #10;
@@ -122,7 +122,7 @@ module ram_2_tb;
     ram_re=1;
     ram_type=4'b1111;
     sign=1;
-    ram_addr=32'h0000000d;
+    ram_addr=32'h00000004;
     
 //    //write half word
     #10;
