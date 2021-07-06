@@ -12,8 +12,21 @@ input wire[31:0] i_branch_addr,
 //loading initial addr
 input wire i_writing_first_addr,
 input wire[31:0] i_instr_start_addr,
-output reg[31:0] o_r_pc
+output reg[31:0] o_r_pc,
+output wire o_branch_address_misaligned
 );
+
+reg branch_address_misaligned;
+always @(*)
+begin
+if (i_is_branch_true==1'b1 && i_branch_addr[1:0]!=2'b00)
+    branch_address_misaligned <= 1'b1;
+else
+    branch_address_misaligned <= 1'b0;
+end
+assign o_branch_address_misaligned = branch_address_misaligned;
+
+
 
 wire[32:0] pc_plus4_addr;
 wire[31:0] pc_nxt;
@@ -35,7 +48,10 @@ end
 
 
 //selects btw first address , branch address and pc+4
-assign pc_nxt = i_writing_first_addr==1 ?  i_instr_start_addr : i_is_branch_true==1 ?   i_branch_addr : pc_plus4_addr[31:0] ;
+assign pc_nxt = i_writing_first_addr==1 ?  i_instr_start_addr :
+                branch_address_misaligned==0 &&i_is_branch_true==1 ?   i_branch_addr :
+                branch_address_misaligned==1 ? 32'h00000400: 
+                pc_plus4_addr[31:0] ;
 
 
 endmodule

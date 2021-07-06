@@ -85,7 +85,7 @@ load_reg_data=32'h00000001;
 inst_mem_addr=32'h00000008;
 inst_mem_data=32'b00000000011000100000000000110011;//addition
 load_reg_addr=5'b00110;  //rs2
-load_reg_data=32'h00000001;  
+load_reg_data=32'h00000004;  
 
 #10
 inst_mem_addr=32'h0000000c;
@@ -93,32 +93,32 @@ inst_mem_data=32'b10000000000010101010100100110111;//lui
 
 #10
 
-inst_mem_addr=16;
+inst_mem_addr=32'h00000010;
 inst_mem_data=32'b00000000001000100010100110010111;//auipc
 
 #10
-inst_mem_addr=20;
-inst_mem_data=32'b00000001111000000000101111101111;//jal
+inst_mem_addr=32'h00000014;
+inst_mem_data=32'b00000010000000000000101111101111;//jal
 
 #10
-inst_mem_addr=32'h00000032;
+inst_mem_addr=32'h00000034;
 inst_mem_data=32'b00000001001000110000101010110011;//add
 load_reg_addr=5'b10001;                             //rs2
 load_reg_data=32'h00001101;  
 
 
 #10
-inst_mem_addr=32'h00000036;
+inst_mem_addr=32'h00000038;
 inst_mem_data=32'b00000001000100110010000000100011;  //str
                 //rs2=10001 rs1=00110
 
 #10
-inst_mem_addr=32'h0000003a;
+inst_mem_addr=32'h0000003c;
 inst_mem_data=32'b00000000000000110010011000000011;     //load                //src=00110  dst=01100
 
 
 #10
-inst_mem_addr=32'h0000003e;
+inst_mem_addr=32'h00000040;
 inst_mem_data=32'b00000000010000000000000110010011; //loading data to 00011 reg
 
 
@@ -130,14 +130,14 @@ inst_mem_data=32'b00000000010000000000000110010011; //loading data to 00011 reg
 #10
 
 
-inst_mem_addr=32'h00000042;
+inst_mem_addr=32'h00000044;
 inst_mem_data=32'b00000000110000000000001000010011; //loading data 4 to 00100 reg
 
 #10
-inst_mem_addr=32'h00000046;        ///
+inst_mem_addr=32'h00000048;        ///
 inst_mem_data=32'b00000000001100100101100001100011; 
 
-
+//inst_mem_data=32'b11111110001100100101111111100011; 
 
 #5
 i_pc_instr_start_addr=32'h00000004;

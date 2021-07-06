@@ -49,7 +49,7 @@ module inst_ram1#(
     assign shifted_addr_load[w-1:0]=im_addr>>2;
 
 integer i=0;
-(* ram_style = "block" *)reg [w-1:0] inst[2**h-1:0];
+(* ram_style = "block" *)reg [w-1:0] inst[2**10-1:0];
 
 
 always@(posedge clk)

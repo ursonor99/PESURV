@@ -52,11 +52,7 @@ output wire[31:0] o_rs2_data
         
         
     //reset
-    always@(negedge i_rst_n)
-    begin
-    for(i=1;i<32;i=i+1)
-                reg_x[i]<=32'b0;  
-    end
+
     
     
     
@@ -64,10 +60,16 @@ output wire[31:0] o_rs2_data
     //write
     always@(posedge i_clk)
     begin
-    if(i_write_en==1'b1 &&  i_rd_addr != 5'b00000)
+    if(i_rst_n==0)
+    begin
+    for(i=1;i<32;i=i+1)
+                reg_x[i]<=32'b0;  
+    end
+    else if(i_write_en==1'b1 &&  i_rd_addr != 5'b00000)
+    begin
             reg_x[i_rd_addr]<=i_rd_data;
             $display("writing to reg address %b the value %b",i_rd_addr,reg_x[i_rd_addr]);
-            
+    end        
         
     end
     
