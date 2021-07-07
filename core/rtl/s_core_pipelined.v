@@ -124,8 +124,21 @@ assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
 
 reg [64:0]id_ex;
 wire [64:0]id_wire_value;
-assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
+wire [20:0]id_control_values={ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
+assign id_wire_value[64:0]={id_control_values[20:0],rs2_data[31:0],rs1_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
 
+
+reg [64:0]ex_mem;
+wire [64:0]ex_wire_value;
+wire [7:0]ex_control_values={ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,writeback_sel[1:0]};
+assign ex_wire_value[64:0]={ex_control_values[7:0],adder_out[31:0],rs2_data[31:0],ALU_out[31:0],pc_out[31:0],inst_rom_out[31:0]};
+ 
+ 
+ reg [64:0]mem_wb;
+ wire[64:0]mem_wire_values;
+ wire[1:0]mem_control_values={writeback_sel[1:0]};
+ assign mem_wire_values[64:0]={mem_control_values[1:0],adder_out[31:0],ram_data_out[31:0],pc_out[31:0],inst_rom_out[31:0]};
+  
 
 
 
