@@ -41,13 +41,8 @@ output wire[31:0] o_rd_writeback
 );
 
 
-
-////////////////////////////////////////////////////////////
-///////////////////instruction fetch///////////////////////
-///////////////////////////////////////////////////////////
-
-
-//pc//////////////////////////////////
+///wire///////////////////////////////////////////
+///pc/////////////////////////////////////////////
 wire i_pc_stall;   //ctrl
 wire i_pc_writing_first_addr;//ctrl
 wire i_pc_is_branch_true;//branch ctrl
@@ -55,6 +50,93 @@ wire[31:0] i_pc_branch_addr;
 //i_pc_instr_start_addr,
 wire[31:0] pc_out;
 wire o_branch_address_misaligned;
+
+//////////instr mem/////////////////////////////////
+wire instrom_read_en;//ctrl
+wire instrom_write_en;//ctrl
+wire[31:0] instrom_pc_in;
+//input wire[31:0] inst_mem_addr,
+//input wire[31:0] inst_mem_data,
+wire[31:0] inst_rom_out;
+
+///////////////reg///////////////////////
+wire[4:0] rs1_addr;
+wire[4:0] rs2_addr;
+wire[4:0]  rd_addr;
+wire[31:0] rd_data;
+wire reg_write_en;//ctrl
+wire[31:0] rs1_data;
+wire[31:0] rs2_data;
+
+wire reg_rd_ctrl;//ctrl
+//input wire[4:0] load_reg_addr, //ext
+//input wire[31:0] load_reg_data, //ext
+
+
+/////////////////////imm/////////////////////////
+wire[31:0] imm_out;
+
+////////////////////alu/////////////////////////
+wire [31:0 ] ALU_input_1;
+wire [31:0 ] ALU_input_2;
+wire[4:0] ALU_operator;
+wire[31:0] ALU_out;
+wire ALU_br_cond;
+
+
+////////////////////carry look ahead adder//////////////////////////
+wire[31:0] adder_in_1;
+wire[32:0] cla_adder_out;
+//pc_out
+wire[31:0] adder_out;
+
+/////////////////////////branch////////////////////////////////////////
+
+wire[31:0] br_jump_addr ;
+wire br_cond_in ;
+wire[1:0] br_type ;  // ctrl 
+wire br_is_branching ;
+wire[31:0] br_addr ; 
+
+////memory/////////////////////////////////////
+
+wire[31:0] ram_write_data_in;
+wire ram_write_en ; //ctrl
+wire[3:0] ram_type ;//ctrl
+wire[31:0] ram_addr ;
+wire ram_read_en ;//ctrl
+wire[31:0] ram_data_out ;
+wire ram_sign ;//ctrl
+wire o_memory_address_misaligned;
+
+
+/////////////////////writeback///////////////////////////////
+wire[1:0] writeback_sel;
+wire[31:0] rd_writeback;
+
+/////////////////////////////pipeline////////////////////////////////////
+
+reg [64:0]if_id_reg;
+wire [64:0]if_wire_value;
+assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
+ 
+
+
+reg [64:0]id_ex;
+wire [64:0]id_wire_value;
+assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
+
+
+
+
+//assign ID_EX=ID_EX;
+////////////////////////////////////////////////////////////
+///////////////////instruction fetch///////////////////////
+///////////////////////////////////////////////////////////
+
+
+//pc//////////////////////////////////
+
 pc uut_pc (clk,
         rst_n,
         i_pc_stall,
@@ -71,12 +153,6 @@ pc uut_pc (clk,
 
 
 //instr mem//////////////////////////////////
-wire instrom_read_en;//ctrl
-wire instrom_write_en;//ctrl
-wire[31:0] instrom_pc_in;
-//input wire[31:0] inst_mem_addr,
-//input wire[31:0] inst_mem_data,
-wire[31:0] inst_rom_out;
 
 inst_ram1 uut_inst(
 clk,
@@ -102,19 +178,15 @@ assign instrom_pc_in=pc_out;
 ///////////////////instruction decode///////////////////////
 ///////////////////////////////////////////////////////////
 
+carry_lookahead_adder uut_adder(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
+
+
 
 assign rs1_addr=inst_rom_out[19:15];
 assign rs2_addr=inst_rom_out[24:20];
 
 //reg//////////////////////////////
 
-wire[4:0] rs1_addr;
-wire[4:0] rs2_addr;
-wire[4:0]  rd_addr;
-wire[31:0] rd_data;
-wire reg_write_en;//ctrl
-wire[31:0] rs1_data;
-wire[31:0] rs2_data;
 
 regs uut_reg (clk,
             rst_n,
@@ -126,14 +198,11 @@ regs uut_reg (clk,
             rs1_data,
             rs2_data);
 
-wire reg_rd_ctrl;//ctrl
-//input wire[4:0] load_reg_addr, //ext
-//input wire[31:0] load_reg_data, //ext
 
 
 //IMM GEN/////////////////////////////////
 
-wire[31:0] imm_out;
+
 IMM_OP uut_imm_gen (inst_rom_out,imm_out);
 
 //Ctrl
@@ -171,11 +240,6 @@ reg_rd_ctrl
 
 
 //ALU//////////////////////////////
-wire [31:0 ] ALU_input_1;
-wire [31:0 ] ALU_input_2;
-wire[4:0] ALU_operator;
-wire[31:0] ALU_out;
-wire ALU_br_cond;
 
 alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
 
@@ -184,14 +248,12 @@ alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_o
 
 
 // Adder //////////////////
-wire[31:0] adder_in_1;
-wire[32:0] cla_adder_out;
-//pc_out
-
-carry_lookahead_adder uut_adder(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
 
 
-wire[31:0] adder_out;
+carry_lookahead_adder uut_adder1(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
+
+
+
 assign adder_out=cla_adder_out[31:0];
 
 
@@ -201,11 +263,6 @@ assign adder_out=cla_adder_out[31:0];
 
 
 ////BRANCH////////////////////////////////////
-wire[31:0] br_jump_addr ;
-wire br_cond_in ;
-wire[1:0] br_type ;  // ctrl 
-wire br_is_branching ;
-wire[31:0] br_addr ; 
 
 branch uut_branch (br_cond_in , br_jump_addr , br_type ,br_is_branching, br_addr) ;
 
@@ -241,14 +298,7 @@ assign ram_write_data_in = rs2_data ;
 assign ram_addr = ALU_out ;
 
 /////////RAM 
-wire[31:0] ram_write_data_in;
-wire ram_write_en ; //ctrl
-wire[3:0] ram_type ;//ctrl
-wire[31:0] ram_addr ;
-wire ram_read_en ;//ctrl
-wire[31:0] ram_data_out ;
-wire ram_sign ;//ctrl
-wire o_memory_address_misaligned;
+
 ram_2 uut_ram(
     clk,
     ram_write_data_in,
@@ -273,8 +323,7 @@ ram_2 uut_ram(
                                     
 
 /////writeback///
-wire[1:0] writeback_sel;
-wire[31:0] rd_writeback;
+
 assign rd_writeback = writeback_sel == `WB_RET_ADDR ? adder_out    :
                       writeback_sel == `WB_ALU_OUT  ? ALU_out      :
                       writeback_sel == `WB_LOAD_DATA? ram_data_out : 32'b0 ;
@@ -330,3 +379,101 @@ assign o_br_jump_addr = br_addr ;
 
 
 endmodule
+
+
+module forwrding(
+    input wire [31:0]ID_EX_rs2,
+    input wire [31:0]ID_EX_rs1,
+    input wire [6:0]Aluop,
+    input wire [6:0]EX_MEM_op,
+    input wire [6:0]MEM_WB_op,
+    input wire [31:0]EX_MEM_rd,
+    input wire [31:0]MEM_WB_rd,
+    output wire [1:0]forward_rs1,
+    output wire [1:0]forward_rs2
+    
+    );
+    //forwarding unit
+    assign forward_rs1=(Aluop==EX_MEM_op && (EX_MEM_rd!=5'b0 && EX_MEM_rd==ID_EX_rs1))?2'b10:
+                       (Aluop==MEM_WB_op && (MEM_WB_rd!=5'b0  && MEM_WB_rd==ID_EX_rs1))?2'b01:
+                       2'b00;
+                       
+                       
+    
+   assign forward_rs2=(Aluop==EX_MEM_op && (EX_MEM_rd!=5'b0 && EX_MEM_rd==ID_EX_rs2))?2'b10:
+                       (Aluop==MEM_WB_op && (MEM_WB_rd!=5'b0  && MEM_WB_rd==ID_EX_rs1))?2'b01:
+                       2'b00;
+                      
+   
+                       
+    
+    
+    
+endmodule
+
+
+
+
+module branch_prediction(
+input wire [1:0]br_taken,
+input wire [6:0]branch_op,
+input wire [6:0]Aluop,
+output wire branch_bit,
+input wire [32:0]cla_adder_out,
+output wire [31:0] o_pc
+);
+
+//wire [1:0]branch_predict;        /00 01 branch 10 11 branch no            taken =11 not taken =00
+//assign branch_predict=branch_pred;
+    reg [1:0]br_predict;
+    always@(*)
+    begin
+    if(br_predict==2'b00 && (br_taken==2'b11 || br_taken==2'b01) && branch_op==Aluop)
+        br_predict=2'b00;
+    else if(br_predict==2'b00 && br_taken==2'b00 && branch_op==Aluop)
+        br_predict=2'b01;
+     else if(br_predict==2'b01 && br_taken==2'b11 && branch_op==Aluop)
+        br_predict=2'b00;
+     else if(br_predict==2'b01 && br_taken==2'b00 && branch_op==Aluop)
+        br_predict=2'b10;
+     else if(br_predict==2'b10 && br_taken==2'b11 && branch_op==Aluop)
+        br_predict=2'b01;
+     else if(br_predict==2'b10 && br_taken==2'b11 && branch_op==Aluop)
+        br_predict=2'b10;
+     else if(br_predict==2'b10 && br_taken==2'b00 && branch_op==Aluop)
+        br_predict=2'b11;
+     else if(br_predict==2'b11 && br_taken==2'b11 && branch_op==Aluop)
+        br_predict=2'b10;
+     else if(br_predict==2'b11 && br_taken==2'b00 && branch_op==Aluop)
+        br_predict=2'b11;
+     
+     end
+    
+    always@(*)
+    begin
+//    if(br_predict==2'b00 || br_predict==2'b01)
+//       // =cla_adder_out[31:0];
+//    else if(br_predict==2'b10 || br_predict==2'b11)
+//         //o_pc=o_pc+4'b0100;
+    end
+endmodule
+
+
+
+module hazard_detection(
+input wire [31:0] ID_EX_rd,
+input wire [31:0] IF_ID_rs1,
+input wire [31:0] IF_ID_rs2,
+input wire [6:0]  IF_ID_opcode,
+input wire [6:0] opcode,
+//input reg [64:0] if_id_reg,
+output reg [64:0] ID_EX,
+output wire [31:0] pc_out
+);
+always@(*)
+begin
+//if(IF_ID_opcode==opcode && ( ID_EX_rd==IF_ID_rs1 || ID_EX_rd==IF_ID_rs2 ))
+//  ID_EX[63:0]=64'b0;
+  
+end 
+endmodule 
