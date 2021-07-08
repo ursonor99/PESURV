@@ -74,7 +74,11 @@ wire reg_rd_ctrl;//ctrl
 
 
 /////////////////////imm/////////////////////////
+
 wire[31:0] imm_out;
+///////////////////////////////////////predicted branch address adder ////////////////
+wire[32:0] cla_branch_pred_out;
+wire[31:0] pred_branch_addr;
 
 ////////////////////alu/////////////////////////
 wire [31:0 ] ALU_input_1;
@@ -117,15 +121,21 @@ wire[31:0] rd_writeback;
 wire branch_predict;
 wire hazard_detection;
 
+
+
+
+
+
+
 /////////////////////////////pipeline////////////////////////////////////
 //////////////stage1///////////////
-reg [64:0]if_id_reg;
+reg [64:0]if_id_reg;// pc : if_id_reg[63:32]  // instr :if_id_reg[31:0]
 wire [64:0]if_wire_value;
 assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
  
 
 /////////////////////////stage2////////////////////
-reg [64:0]id_ex_reg;
+reg [64:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
 wire [64:0]id_wire_value;
 wire [20:0]id_control_values={ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
 assign id_wire_value[64:0]={id_control_values[20:0],rd_data[31:0],rs2_data[31:0],rs1_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
@@ -415,6 +425,10 @@ assign o_writeback_sel=writeback_sel;
 assign o_adder_out = adder_out;
 assign o_br_jump_addr = br_addr ;
 
+
+
+
+
 //pipelining
 always@(posedge clk)
 begin
@@ -509,6 +523,17 @@ output wire  branch_predict
 //         //o_pc=o_pc+4'b0100;
 //    end
 endmodule
+
+///////////////////////////////////////predicted branch address adder ////////////////
+wire[32:0] cla_branch_pred_out;
+wire[31:0] pred_branch_addr;
+carry_lookahead_adder uut_adder1(.i_add1(imm_out),.i_add2(if_id_reg[63:32]),.o_result(cla_branch_pred_out));
+
+
+
+assign pred_branch_addr=cla_adder_out[31:0];
+
+
 
 
 
