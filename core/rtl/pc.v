@@ -1,11 +1,13 @@
 `timescale 1ns / 1ps
 
+`include "GLOBALS.v"
 
 module pc(
 input wire i_clk,
 input wire i_rst_n,
 //for multi cycle instr
 //input wire i_stall,
+input wire[1:0] trap,
 input wire i_is_branch_true,
 input wire[31:0] i_branch_addr,
 
@@ -48,7 +50,10 @@ end
 
 //selects btw first address , branch address and pc+4
 assign pc_nxt = branch_address_misaligned==0 && i_is_branch_true==1 ?   i_branch_addr :
-                branch_address_misaligned==1 ? 32'h1020:
+                branch_address_misaligned==1 ? 1020:
+                trap==`E_CALL ?  2050 :
+                trap==`E_BREAK ?  2051 :
+                trap==`MEM_MISALIGN ?  2052 :
                 pc_plus4_addr[31:0] ;
 
 
