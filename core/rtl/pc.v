@@ -12,7 +12,7 @@ input wire[31:0] i_branch_addr,
 //loading initial addr
 input wire i_writing_first_addr,
 input wire[31:0] i_instr_start_addr,
-output reg[31:0] o_r_pc,
+output reg[31:0] o_r_pc=0,
 output wire o_branch_address_misaligned
 );
 
@@ -42,15 +42,16 @@ always@(posedge i_clk)
 begin
 if (i_rst_n == 0)
     o_r_pc<=0;
-else if (i_stall==0)
+else 
     o_r_pc<=pc_nxt;
 end
 
 
 //selects btw first address , branch address and pc+4
-assign pc_nxt = i_writing_first_addr==1 ?  i_instr_start_addr :
-                branch_address_misaligned==0 &&i_is_branch_true==1 ?   i_branch_addr :
-                branch_address_misaligned==1 ? 32'h00000400: 
+assign pc_nxt = i_stall==1 && i_writing_first_addr==1 ?  i_instr_start_addr :
+                (i_stall==1) ?  o_r_pc :
+                branch_address_misaligned==0 && i_is_branch_true==1 ?   i_branch_addr :
+                branch_address_misaligned==1 ? 32'h00000400:
                 pc_plus4_addr[31:0] ;
 
 

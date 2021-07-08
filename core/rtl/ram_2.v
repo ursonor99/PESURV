@@ -185,6 +185,11 @@ module ram_2 #(
     output  wire     [w-1:0] data_reg;
     output  wire o_memory_address_misaligned;
     
+//reg double_clk=0;
+//always @(posedge clk or negedge clk)
+//begin
+//double_clk <= ~double_clk;
+//end
     
 wire[31:0] ram_word_aligned_addr;
 wire[1:0] ram_word__position;
@@ -220,7 +225,7 @@ assign o_memory_address_misaligned = memory_address_misaligned ;
 
 
 
-always @(posedge clk)
+always @(*)
 
 begin
 if (memory_address_misaligned==1'b0)

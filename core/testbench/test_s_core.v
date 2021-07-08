@@ -144,7 +144,7 @@ i_pc_instr_start_addr=32'h00000004;
 #5
 setup=0;
 
-#200
+#120
 $finish;
 
 

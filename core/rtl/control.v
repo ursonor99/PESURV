@@ -108,7 +108,7 @@ output wire reg_rd_ctrl
                             is_jalr     ?  `JALR:
                             is_branch   ?  `BR  :
                             `NONE ;
-    assign  PC_is_stall =   setup == 1 ? 1'b0 :
+    assign  PC_is_stall =   setup == 1 ? 1'b1 :
                             1'b0 ;           
     
     assign  PC_is_writing_first_addr =   setup == 1 ? 1'b1 :
