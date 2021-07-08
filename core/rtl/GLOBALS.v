@@ -72,6 +72,7 @@
 `define OPCODE_OP_IMM       5'b00100 //04 I
 `define OPCODE_JAL          5'b11011 //1C J
 `define OPCODE_JALR         5'b11001 //19 I
+`define OPCODE_BRANCH       5'b11000 //18 B
 //RAM TYPE 
 `define BYTE 4'b0001
 `define HALFWORD 4'b0011
