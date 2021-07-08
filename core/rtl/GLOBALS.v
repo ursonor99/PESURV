@@ -9,7 +9,10 @@
 `define JALR 2'b10
 `define BR 2'b11
 
-
+//exceptions
+`define MEM_MISALIGN 2'b00
+`define E_CALL 2'b01
+`define E_BREAK 2'b10
 
 
 // ALU Control Codes 
