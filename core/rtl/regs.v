@@ -77,11 +77,11 @@ output wire[31:0] o_rs2_data
     assign is_i_rs1_addr_zero= i_rs1_addr==5'b00000;
     assign is_i_rs2_addr_zero= i_rs2_addr==5'b00000;
     
-    assign is_rd_fwd_rs1= (i_rs1_addr==i_rd_addr) && (i_write_en==1);
-    assign is_rd_fwd_rs2= (i_rs2_addr==i_rd_addr) && (i_write_en==1);
+//    assign is_rd_fwd_rs1= (i_rs1_addr==i_rd_addr) && (i_write_en==1);
+//    assign is_rd_fwd_rs2= (i_rs2_addr==i_rd_addr) && (i_write_en==1);
     
-    assign o_rs1_data = is_i_rs1_addr_zero==1 ? 32'b0 : is_rd_fwd_rs1==1? i_rd_data : reg_x[i_rs1_addr];
-    assign o_rs2_data = is_i_rs2_addr_zero==1 ? 32'b0 : is_rd_fwd_rs2==1? i_rd_data : reg_x[i_rs2_addr];
+    assign o_rs1_data = is_i_rs1_addr_zero==1 ? 32'b0 :  reg_x[i_rs1_addr];
+    assign o_rs2_data = is_i_rs2_addr_zero==1 ? 32'b0 : reg_x[i_rs2_addr];
     
     
     

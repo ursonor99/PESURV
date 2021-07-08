@@ -25,45 +25,43 @@ module inst_ram1#(
     clk,
     //read
     pc,
-    re,
-    inst_data,
+//    re,
+    inst_data
     //write
-    is_write,
-    im_addr,
-    im_inst);
+//    is_write,
+//    im_addr,
+//    im_inst
+);
  
     input clk;
-    input wire[w-1:0] im_addr;
-    input wire[w-1:0] im_inst;
     input wire[w-1:0] pc;
     output wire[w-1:0] inst_data;
-    input wire is_write;
-    input wire re;
+//    input wire[w-1:0] im_addr;
+//    input wire[w-1:0] im_inst;
+//    input wire is_write;
+//    input wire re;
     
     
 
     wire[w-1:0] shifted_addr_pc;
     assign shifted_addr_pc[w-1:0]=pc>>2;
 
-    wire[w-1:0] shifted_addr_load;
-    assign shifted_addr_load[w-1:0]=im_addr>>2;
+//    wire[w-1:0] shifted_addr_load;
+//    assign shifted_addr_load[w-1:0]=im_addr>>2;
 
 integer i=0;
-(* ram_style = "block" *)reg [w-1:0] inst[2**10-1:0];
+integer n=0;
+(* ram_style = "block" *)reg [w-1:0] inst[0:2**10-1];
 
-
-always@(posedge clk)
-begin
-    if(is_write)
+initial
     begin
-        inst[shifted_addr_load][w-1:0]<=im_inst[w-1:0];
-        
-        //$display("instr_ram : %h %h %h %h",shifted_addr_pc[w-1:0],shifted_addr_load[w-1:0],im_inst[w-1:0],inst[shifted_addr_load][w-1:0]);
-
+//        for(i = 0; i < 1024 ;i = i+1) inst[i] = 32'b0;
+        $readmemb("instr.mem", inst);
+        for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end
 
-end
-assign inst_data[w-1:0]=(re)?inst[shifted_addr_pc][w-1:0]:2'h00;
+assign inst_data[w-1:0]=inst[shifted_addr_pc];
+
 
 endmodule
 

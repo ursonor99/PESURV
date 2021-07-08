@@ -18,15 +18,15 @@
 
 module control(
 input wire[31:0] instr_in,
-input wire       setup ,
+//input wire       setup ,
 
 output wire[4:0] ALU_OP,
 output wire REG_write_en,
-output wire IROM_write_en,
-output wire IROM_read_en,
+//output wire IROM_write_en,
+//output wire IROM_read_en,
 output wire[1:0] BR_type,
-output wire PC_is_stall ,
-output wire PC_is_writing_first_addr,
+//output wire PC_is_stall ,
+//output wire PC_is_writing_first_addr,
 output wire RAM_write_en ,
 output wire RAM_read_en ,
 output wire[3:0] RAM_ram_type ,
@@ -35,8 +35,8 @@ output wire MUX_op1_select,
 output wire MUX_op2_select,
 output wire MUX_br_ret_addr_select,
 output wire MUX_br_Addr_sel,
-output wire[1:0] MUX_writeback ,
-output wire reg_rd_ctrl
+output wire[1:0] MUX_writeback 
+//output wire reg_rd_ctrl
 
 
     );
@@ -98,21 +98,21 @@ output wire reg_rd_ctrl
     assign REG_write_en = is_op || is_op_imm || is_lui || is_auipc || is_jal || is_jalr || is_load   ? 1'b1 :
                           1'b0 ;
                           
-    assign IROM_write_en = setup == 1 ? 1'b1 :
-                          1'b0 ;
+//    assign IROM_write_en = setup == 1 ? 1'b1 :
+//                          1'b0 ;
                           
-    assign IROM_read_en  = setup == 1 ? 1'b0 :
-                           1'b1 ;
+//    assign IROM_read_en  = setup == 1 ? 1'b0 :
+//                           1'b1 ;
                            
     assign BR_type       =  is_jal      ?  `JAL :
                             is_jalr     ?  `JALR:
                             is_branch   ?  `BR  :
                             `NONE ;
-    assign  PC_is_stall =   setup == 1 ? 1'b1 :
-                            1'b0 ;           
+//    assign  PC_is_stall =   setup == 1 ? 1'b1 :
+//                            1'b0 ;           
     
-    assign  PC_is_writing_first_addr =   setup == 1 ? 1'b1 :
-                                         1'b0 ; 
+//    assign  PC_is_writing_first_addr =   setup == 1 ? 1'b1 :
+//                                         1'b0 ; 
     
     
     assign RAM_write_en  = is_store ? 1'b1 :
@@ -146,8 +146,8 @@ output wire reg_rd_ctrl
                                                                          `WB_NO_DATA ; // is_store , is_branch  
                            
     
-    assign reg_rd_ctrl = setup == 1 ? 1'b1 :
-                                    1'b0 ;
+//    assign reg_rd_ctrl = setup == 1 ? 1'b1 :
+//                                    1'b0 ;
     
     
 endmodule
