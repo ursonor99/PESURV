@@ -67,7 +67,11 @@
 `define FN3_SH             3'b001
 `define FN3_SW             3'b010
 
-
+//control 
+`define OPCODE_OP           5'b01100 //0B
+`define OPCODE_OP_IMM       5'b00100 //04 I
+`define OPCODE_JAL          5'b11011 //1C J
+`define OPCODE_JALR         5'b11001 //19 I
 //RAM TYPE 
 `define BYTE 4'b0001
 `define HALFWORD 4'b0011
