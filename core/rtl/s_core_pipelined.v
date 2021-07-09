@@ -450,7 +450,7 @@ begin
         //o_pc=cla_adder_out;
         if(branch_predict)
             begin
-            
+            //pc_wire
             end
          if(id_ex_reg[181]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
@@ -491,16 +491,16 @@ module forwrding(
     
     );
     //forwarding unit
-    assign forward_mux1=(ex_mem_REG_write_en==1'b1 && ex_mem_opcode==(`OPCODE_OP || `OPCODE_OP_IMM)  && EX_MEM_rd==ID_EX_rs1 )?2'b10:
-                       (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd==ID_EX_rs1)?2'b01:
-                       (ex_mem_REG_write_en==1'b1 &&  ex_mem_opcode==(`OPCODE_JAL || `OPCODE_JALR) && MEM_WB_rd==ID_EX_rs1 )?2'b11:
+    assign forward_mux1=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM  && EX_MEM_rd==ID_EX_rs1 )?2'b10:
+                       (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs1)?2'b01:
+                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR && MEM_WB_rd==ID_EX_rs1 )?2'b11:
                        2'b00;
                        
                        
     
-   assign forward_mux2=(ex_mem_REG_write_en==1'b1 && ex_mem_opcode==(`OPCODE_OP || `OPCODE_OP_IMM)  && EX_MEM_rd==ID_EX_rs2 )?2'b10:
-                       (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd==ID_EX_rs2)?2'b01:
-                       (ex_mem_REG_write_en==1'b1 &&  ex_mem_opcode==(`OPCODE_JAL || `OPCODE_JALR) && MEM_WB_rd==ID_EX_rs2 )?2'b11:
+   assign forward_mux2=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM  && EX_MEM_rd==ID_EX_rs2 )?2'b10:
+                       (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs2)?2'b01:
+                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR && MEM_WB_rd==ID_EX_rs2 )?2'b11:
                        2'b00;
                       
    

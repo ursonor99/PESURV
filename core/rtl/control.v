@@ -27,7 +27,7 @@ output wire IROM_read_en,
 output wire[1:0] BR_type,
 output wire PC_is_stall ,
 output wire PC_is_writing_first_addr,
-output wire RAM_write_en ,
+output wire RAM_write_en ,()
 output wire RAM_read_en ,
 output wire[3:0] RAM_ram_type ,
 output wire RAM_sign,
