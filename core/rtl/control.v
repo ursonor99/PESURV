@@ -26,10 +26,13 @@ output wire REG_write_en,
 //output wire IROM_read_en,
 output wire[1:0] BR_type,
 <<<<<<< HEAD
+<<<<<<< HEAD
 output wire PC_is_stall ,
 output wire PC_is_writing_first_addr,
 output wire RAM_write_en ,()
 =======
+=======
+>>>>>>> fcbabfb1b763c056881b03289d3b6ebe60e732a2
 //output wire PC_is_stall ,
 //output wire PC_is_writing_first_addr,
 output wire RAM_write_en ,
