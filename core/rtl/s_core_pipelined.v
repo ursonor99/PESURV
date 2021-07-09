@@ -144,23 +144,23 @@ assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
  
 
 /////////////////////////stage2////////////////////
-reg [151:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
-wire [151:0]id_wire_value;
+reg [182:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
+wire [182:0]id_wire_value;
 wire [21:0]id_control_values={wb_reg_write_en,ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
-assign id_wire_value[151:0]={id_control_values[21:0],imm_out,branch_predict,rs2_data[31:0],rs1_data[31:0],if_id_reg[63:32],if_id_reg[31:0]};
+assign id_wire_value[182:0]={imm_out,id_control_values[21:0],branch_predict,rs2_data[31:0],rs1_data[31:0],if_id_reg[63:32],if_id_reg[31:0]};
 
 ///////////////////////stage3////////////////////
 reg [169:0]ex_mem_reg;
 wire [169:0]ex_wire_value;
-wire [9:0]ex_control_values={id_ex_reg[151],id_ex_reg[142] ,id_ex_reg[141] ,id_ex_reg[140:137],id_ex_reg[136],id_ex_reg[131:130]};
+wire [9:0]ex_control_values={id_ex_reg[150],id_ex_reg[141] ,id_ex_reg[140] ,id_ex_reg[139:136],id_ex_reg[135],id_ex_reg[130:129]};
 assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],id_ex_reg[127:96],id_ex_reg[63:32],id_ex_reg[31:0]};
 
 
  
  //////////////////////////////////stage4/////////////////////
- reg [130:0]mem_wb_reg;
- wire[130:0]mem_wire_value;
- assign mem_wire_value[130:0]={ex_mem_reg[169],ex_mem_reg[161:160],ex_mem_reg[159:128],ram_data_out[31:0],ex_mem_reg[63:32],ex_mem_reg[31:0]};
+ reg [162:0]mem_wb_reg;
+ wire[162:0]mem_wire_value;
+ assign mem_wire_value[162:0]={ex_mem_reg[127:96],ex_mem_reg[169],ex_mem_reg[161:160],ex_mem_reg[159:128],ram_data_out[31:0],ex_mem_reg[63:32],ex_mem_reg[31:0]};
   
 
 
@@ -236,7 +236,7 @@ regs uut_reg (clk,
             wb_reg_write_en,
             rs1_data,
             rs2_data);
-//assign wb_reg_write_en =
+assign wb_reg_write_en = mem_wb_reg[130];
 assign rs1_addr=if_id_reg[19:15];
 assign rs2_addr=if_id_reg[24:20];
 
@@ -289,8 +289,8 @@ writeback_sel
 
 
 //ALU//////////////////////////////
-
-alu uut_alu(.i_alu_operator(if_id_reg[]),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
+                                //ALU op
+alu uut_alu(.i_alu_operator(id_ex_reg[149:145]),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
 
 
 
@@ -298,8 +298,8 @@ alu uut_alu(.i_alu_operator(if_id_reg[]),.i_alu_operand_1(ALU_input_1),.i_alu_op
 
 // Adder //////////////////
 
-
-carry_lookahead_adder uut_adder1(.i_add1(adder_in_1),.i_add2(pc_out),.o_result(cla_adder_out));
+                                                               //pc
+carry_lookahead_adder uut_adder1(.i_add1(adder_in_1),.i_add2(id_ex_reg[63:32]),.o_result(cla_adder_out));
 
 
 
@@ -312,8 +312,8 @@ assign adder_out=cla_adder_out[31:0];
 
 
 ////BRANCH////////////////////////////////////
-
-branch uut_branch (br_cond_in , br_jump_addr , br_type ,br_is_branching, br_addr) ;
+                                                 //br_type
+branch uut_branch (br_cond_in , br_jump_addr , id_ex_reg[143:142] ,br_is_branching, br_addr) ;
 
 //branch assigns
 assign br_cond_in = ALU_br_cond;
@@ -327,17 +327,17 @@ wire [1:0]forward_mux1;
 wire [1:0]forward_mux2;
 wire [31:0]mux1_output;
 wire [31:0]mux2_output;
-
-assign mux1_output = op1_select==1 ? rs1_data : pc_out ;
+                                            //rs1                //pc
+assign mux1_output = id_ex_reg[134]==1 ? id_ex_reg[95:64] : id_ex_reg[63:32] ;
 assign ALU_input_1=(forward_mux1==2'b00)?mux1_output:
-                   (forward_mux1==2'b10)?ex_mem_reg[95:64]:
+                   (forward_mux1==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux1==2'b01)?rd_writeback:
-                   (forward_mux1==2'b11)?ex_mem_reg[191:160]
+                   (forward_mux1==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
 
 
-
-assign mux2_output = op2_select==1 ? rs2_data : imm_out ;
+                                    //rs2                   //imm out
+assign mux2_output = id_ex_reg[133]==1 ? id_ex_reg[127:96] : id_ex_reg[182:150] ;
 assign ALU_input_2=(forward_mux2==2'b00)?mux2_output:
                    (forward_mux2==2'b10)?ex_mem_reg[95:64]:
                    (forward_mux2==2'b01)?rd_writeback:
@@ -348,11 +348,11 @@ assign ALU_input_2=(forward_mux2==2'b00)?mux2_output:
 
 
 //return address or br addr select
-assign adder_in_1 = BR_OR_RETURN_select==1 ? imm_out : 32'h00000004 ; 
+assign adder_in_1 = id_ex_reg[132]==1 ? id_ex_reg[182:150] : 32'h00000004 ; 
 
 
 
-assign br_jump_addr = addr_sel==1 ? adder_out : ALU_out;
+assign br_jump_addr = id_ex_reg[131]==1 ? adder_out : ALU_out;
 
 
 
@@ -361,20 +361,20 @@ assign br_jump_addr = addr_sel==1 ? adder_out : ALU_out;
 /////////////////////////MEMORY////////////////////////////
 ////////////////////////////////////////////////////////////
 
-assign ram_write_data_in = rs2_data ; 
-assign ram_addr = ALU_out ;
+assign ram_write_data_in = ex_mem_reg[95:64] ; 
+assign ram_addr = ex_mem_reg[127:96] ;
 
 /////////RAM 
 
 ram_2 uut_ram(
     clk,
     ram_write_data_in,
-    ram_write_en,
-    ram_type,
-    ram_sign,
+    ex_mem_reg[168],//writeen
+    ex_mem_reg[166:163],//type
+    ex_mem_reg[162],//sign
     ram_addr,
     //ram_dout,
-    ram_read_en,
+    ex_mem_reg[167],//read en
     ram_data_out ,
     o_memory_address_misaligned
     );
@@ -391,9 +391,9 @@ ram_2 uut_ram(
 
 /////writeback///
 
-assign rd_writeback = writeback_sel == `WB_RET_ADDR ? adder_out    :
-                      writeback_sel == `WB_ALU_OUT  ? ALU_out      :
-                      writeback_sel == `WB_LOAD_DATA? ram_data_out : 32'b0 ;
+assign rd_writeback = mem_wb_reg[129:128] == `WB_RET_ADDR ? mem_wb_reg[127:96]    ://ret addr adder_out
+                     mem_wb_reg[129:128] == `WB_ALU_OUT  ? mem_wb_reg[162:131]     :
+                      mem_wb_reg[129:128] == `WB_LOAD_DATA? mem_wb_reg[95:64] : 32'b0 ;
 
 
 
