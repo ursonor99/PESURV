@@ -144,26 +144,25 @@ assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
  
 
 /////////////////////////stage2////////////////////
-reg [213:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
-wire [213:0]id_wire_value;
-wire [20:0]id_control_values={ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
-assign id_wire_value[213:0]={imm_out,branch_predict,id_control_values[20:0],rd_data[31:0],rs2_data[31:0],rs1_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
+reg [151:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
+wire [151:0]id_wire_value;
+wire [21:0]id_control_values={wb_reg_write_en,ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
+assign id_wire_value[151:0]={id_control_values[21:0],imm_out,branch_predict,rs2_data[31:0],rs1_data[31:0],if_id_reg[63:32],if_id_reg[31:0]};
 
-//branch_predict=181
 ///////////////////////stage3////////////////////
-reg [201:0]ex_mem_reg;
-wire [201:0]ex_wire_value;
-wire [7:0]ex_control_values={ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,writeback_sel[1:0]};
-assign ex_wire_value[201:0]={branch_predict,ex_control_values[8:0],adder_out[31:0],rd_data[31:0],ALU_out[31:0],rs2_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
+reg [169:0]ex_mem_reg;
+wire [169:0]ex_wire_value;
+wire [9:0]ex_control_values={id_ex_reg[151],id_ex_reg[142] ,id_ex_reg[141] ,id_ex_reg[140:137],id_ex_reg[136],id_ex_reg[131:130]};
+assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],id_ex_reg[127:96],id_ex_reg[63:32],id_ex_reg[31:0]};
 
-//branch_predict=201
+
  
  //////////////////////////////////stage4/////////////////////
- reg [194:0]mem_wb_reg;
- wire[194:0]mem_wire_value;
- assign mem_wire_value[194:0]={branch_predict,writeback_sel[1:0],rd_writeback[31:0],adder_out[31:0],ram_data_out[31:0],rd_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
+ reg [130:0]mem_wb_reg;
+ wire[130:0]mem_wire_value;
+ assign mem_wire_value[130:0]={ex_mem_reg[169],ex_mem_reg[161:160],ex_mem_reg[159:128],ram_data_out[31:0],ex_mem_reg[63:32],ex_mem_reg[31:0]};
   
-//branch_predict=194
+
 
 
 ///trap handeling
