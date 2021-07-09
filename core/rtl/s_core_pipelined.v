@@ -282,7 +282,7 @@ writeback_sel
 //reg_rd_ctrl
  );
  
- hazard_detection uut3(.ID_EX_rd(id_ex_reg[11:7]),.IF_ID_rs1(if_id_reg[19:15]),.IF_ID_rs2(if_id_reg[24:20]),.ID_EX_read_enable(id_ex_reg[140]),.hazard_detection(hazard_detection));
+ 
 
 
 
@@ -361,8 +361,7 @@ assign br_jump_addr = id_ex_reg[131]==1 ? adder_out : ALU_out;
 
 
 //fowding unit
-forwarding uut1(.ID_EX_rs2(id_ex_reg[127:96]),.ID_EX_rs1(id_ex_reg[95:64]),.ex_mem_opcode(ex_mem_reg[6:0]),.ex_mem_REG_write_en(ex_mem_reg[169]),.mem_wb_REG_write_en(mem_wb_reg[130]),.ex_mem_Alu_out(ex_mem_reg[127:96]),
-                  .mem_wb_out(rd_writeback[31:0]),.EX_MEM_rd(ex_mem_reg[11:7]),.MEM_WB_rd(mem_wb_reg[11:7]),.forward_mux1(forward_mux1),.forward_mux2(forward_mux2));
+
                   
 ////////////////////////////////////////////////////////////
 /////////////////////////MEMORY////////////////////////////
@@ -445,7 +444,10 @@ assign o_br_jump_addr = ex_br_addr ;
 
 assign br_taken = {id_ex_reg[128],br_is_branching};
 
-
+hazard_detection uut3(.ID_EX_rd(id_ex_reg[11:7]),.IF_ID_rs1(if_id_reg[19:15]),.IF_ID_rs2(if_id_reg[24:20]),.ID_EX_read_enable(id_ex_reg[140]),.hazard_detection(hazard_detection));
+forwarding uut1(.ID_EX_rs2(id_ex_reg[127:96]),.ID_EX_rs1(id_ex_reg[95:64]),.ex_mem_opcode(ex_mem_reg[6:0]),.ex_mem_REG_write_en(ex_mem_reg[169]),.mem_wb_REG_write_en(mem_wb_reg[130]),.ex_mem_Alu_out(ex_mem_reg[127:96]),
+                  .mem_wb_out(rd_writeback[31:0]),.EX_MEM_rd(ex_mem_reg[11:7]),.MEM_WB_rd(mem_wb_reg[11:7]),.forward_mux1(forward_mux1),.forward_mux2(forward_mux2));
+branch_prediction(.clk(clk),.rst_n(rst_n), .br_taken(br_taken),.IF_ID_op(if_id_reg[6:0]),.ID_EX_op(id_ex_reg[6:0]),.branch_predict(branch_predict));
 
 
 //pipelining
@@ -501,7 +503,7 @@ wire[31:0] ultimate_pc_input_br_address ;
 wire ultimate_pc_is_branching ;
 assign  ultimate_pc_input_br_address = branch_predict==1 ?  pred_branch_addr :
                                        br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? ex_br_addr :
-                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[32:63]+3'b100 :31'b0;
+                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[63:32]+3'b100 :31'b0;
                                        
 assign ultimate_pc_is_branching = branch_predict==1 ? 1'b1 :
                                   br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
