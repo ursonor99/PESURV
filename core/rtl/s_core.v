@@ -94,24 +94,8 @@ module s_core(
 input wire clk ,
 input wire rst_n,
 
-//pc
 
 
-input wire[31:0] i_pc_instr_start_addr,
-
-
-//instr_mem
-
-input wire[31:0] inst_mem_addr,
-input wire[31:0] inst_mem_data,
-
-
-//regs
-
-input wire[4:0] load_reg_addr,
-input wire[31:0] load_reg_data,
-
-input wire setup,
 
 output wire[31:0] o_pc,
 output wire[31:0] o_inst_data,
@@ -129,26 +113,30 @@ output wire[31:0] o_rd_writeback
 
 
 
-
+wire[1:0] trap;
+wire o_memory_address_misaligned;             
 
 
 //pc//////////////////////////////////
-wire i_pc_stall;   //ctrl
-wire i_pc_writing_first_addr;//ctrl
+//wire i_pc_stall;   //ctrl
+//wire i_pc_writing_first_addr;//ctrl
 wire i_pc_is_branch_true;//branch ctrl
 wire[31:0] i_pc_branch_addr;
 //i_pc_instr_start_addr,
+
 wire[31:0] pc_out;
 wire o_branch_address_misaligned;
 pc uut_pc (clk,
         rst_n,
-        i_pc_stall,
+//        i_pc_stall,
+        trap,
         i_pc_is_branch_true,
         i_pc_branch_addr,
-        i_pc_writing_first_addr,
-        i_pc_instr_start_addr,
-        pc_out,
-        o_branch_address_misaligned);
+//        i_pc_writing_first_addr,
+//        i_pc_instr_start_addr,
+        pc_out
+//        o_branch_address_misaligned
+);
 
 
 
@@ -156,17 +144,19 @@ pc uut_pc (clk,
 
 
 //instr mem//////////////////////////////////
-wire instrom_read_en;//ctrl
+//wire instrom_read_en;//ctrl
 wire instrom_write_en;//ctrl
 wire[31:0] instrom_pc_in;
-//input wire[31:0] inst_mem_addr,
-//input wire[31:0] inst_mem_data,
+wire[31:0] inst_mem_addr;
+wire[31:0] inst_mem_data;
 wire[31:0] inst_rom_out;
-
+assign instrom_write_en=0;
+assign inst_mem_data =0;
+assign inst_mem_addr=0;
 inst_ram1 uut_inst(
 clk,
 instrom_pc_in,
-instrom_read_en,//CTRL
+//instrom_read_en,//CTRL
 inst_rom_out, ///// OUT
 instrom_write_en,//CTRL
 inst_mem_addr, /// EXT
@@ -176,6 +166,9 @@ inst_mem_data   /// EXT
 
 
 
+assign trap = o_memory_address_misaligned==1 ? `MEM_MISALIGN:
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000000 ?`E_CALL :
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :2'b11;
 
 //reg//////////////////////////////
 
@@ -268,7 +261,7 @@ wire[31:0] ram_addr ;
 wire ram_read_en ;//ctrl
 wire[31:0] ram_data_out ;
 wire ram_sign ;//ctrl
-wire o_memory_address_misaligned;
+//wire o_memory_address_misaligned;
 ram_2 uut_ram(
     clk,
     ram_write_data_in,
@@ -318,14 +311,14 @@ assign rd_writeback = writeback_sel == `WB_RET_ADDR ? adder_out    :
 
 control uut_ctrl ( 
 inst_rom_out,
-setup,
+//setup,
 ALU_operator,
 reg_write_en,
-instrom_write_en,
-instrom_read_en,
+//instrom_write_en,
+//instrom_read_en,
 br_type,
-i_pc_stall,
-i_pc_writing_first_addr,
+//i_pc_stall,
+//i_pc_writing_first_addr,
 ram_write_en ,
 ram_read_en ,
 ram_type,
@@ -334,8 +327,8 @@ op1_select,
 op2_select,
 BR_OR_RETURN_select,
 addr_sel,
-writeback_sel,
-reg_rd_ctrl
+writeback_sel
+//reg_rd_ctrl
  );
 
     
@@ -361,9 +354,9 @@ assign o_rs1_data=rs1_data ;
 assign o_rs2_data= rs2_data ;
 
 // select btw load addr  and  rd addr
-assign rd_addr= reg_rd_ctrl==1?load_reg_addr : inst_rom_out[11:7]; //ext
+assign rd_addr=inst_rom_out[11:7]; //ext
 // select btw load data and writeback
-assign rd_data = reg_rd_ctrl==1?load_reg_data:rd_writeback; //ext
+assign rd_data =rd_writeback; //ext
 
 //alu
 assign o_ALU_out = ALU_out;

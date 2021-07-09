@@ -484,8 +484,8 @@ module forwrding(
     input wire  mem_wb_REG_write_en,
     input wire [31:0]ex_mem_Alu_out,
     input wire [31:0] mem_wb_out,
-    input wire [31:0]EX_MEM_rd,
-    input wire [31:0]MEM_WB_rd,
+    input wire [4:0]EX_MEM_rd,
+    input wire [4:0]MEM_WB_rd,
     output wire [1:0]forward_mux1,
     output wire [1:0]forward_mux2
     
