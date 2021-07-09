@@ -37,7 +37,11 @@ output wire o_ALU_br_cond,
 output wire[31:0] o_br_jump_addr,
 output wire[31:0] o_RAM_data_out,
 output wire[1:0] o_writeback_sel,
-output wire[31:0] o_rd_writeback
+output wire[31:0] o_rd_writeback,
+output wire[64:0] o_if_id,
+output wire[182:0] o_id_ex,
+output wire[169:0] o_ex_mem,
+output wire[162:0] o_mem_wb
 );
 
 
@@ -433,6 +437,11 @@ assign o_adder_out = adder_out;
 assign o_br_jump_addr = ex_br_addr ;
 
 
+assign o_if_id = if_id_reg;
+assign o_id_ex = id_ex_reg;
+assign o_ex_mem = ex_mem_reg;
+
+assign o_mem_wb = mem_wb_reg;
 
 
 
@@ -466,7 +475,7 @@ branch_prediction uut_br_pred(.clk(clk),.rst_n(rst_n), .br_taken(br_taken),.IF_I
 
 
 //pipelining
-always@(posedge clk,negedge rst_n)
+always@(posedge clk)
 begin
     if (rst_n==0)
     begin
@@ -505,8 +514,11 @@ begin
             if_id_reg<=if_wire_value;
             id_ex_reg<=id_wire_value;
             end
+      if (rst_n==1)
+         begin
          ex_mem_reg<=ex_wire_value;
          mem_wb_reg<=mem_wire_value;
+         end
          
 
 end

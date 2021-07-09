@@ -39,7 +39,7 @@ carry_lookahead_adder uut(.i_add1(o_r_pc),.i_add2(4),.o_result(pc_plus4_addr));
 
 
 
-always@(posedge i_clk,negedge i_rst_n) 
+always@(posedge i_clk) 
 begin
 if (i_rst_n == 0)
     o_r_pc<=32'b0;
