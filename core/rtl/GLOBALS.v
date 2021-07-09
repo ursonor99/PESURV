@@ -71,11 +71,11 @@
 `define FN3_SW             3'b010
 
 //control 
-`define OPCODE_OP           5'b01100 //0B
-`define OPCODE_OP_IMM       5'b00100 //04 I
-`define OPCODE_JAL          5'b11011 //1C J
-`define OPCODE_JALR         5'b11001 //19 I
-`define OPCODE_BRANCH       5'b11000 //18 B
+`define OPCODE_OP           7'b0110011 //0B
+`define OPCODE_OP_IMM       7'b0010011 //04 I
+`define OPCODE_JAL          7'b1101111 //1C J
+`define OPCODE_JALR         7'b1100111 //19 I
+`define OPCODE_BRANCH       7'b1100011 //18 B
 //RAM TYPE 
 `define BYTE 4'b0001
 `define HALFWORD 4'b0011
