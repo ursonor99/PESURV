@@ -7,24 +7,24 @@ module s_core_pipelined(
 input wire clk ,
 input wire rst_n,
 
-//pc
+////pc
 
 
-input wire[31:0] i_pc_instr_start_addr,
+//input wire[31:0] i_pc_instr_start_addr,
 
 
-//instr_mem
+////instr_mem
 
-input wire[31:0] inst_mem_addr,
-input wire[31:0] inst_mem_data,
+//input wire[31:0] inst_mem_addr,
+//input wire[31:0] inst_mem_data,
 
 
-//regs
+////regs
 
-input wire[4:0] load_reg_addr,
-input wire[31:0] load_reg_data,
+//input wire[4:0] load_reg_addr,
+//input wire[31:0] load_reg_data,
 
-input wire setup,
+//input wire setup,
 
 output wire[31:0] o_pc,
 output wire[31:0] o_inst_data,
@@ -51,14 +51,18 @@ wire[31:0] i_pc_branch_addr;
 wire[31:0] pc_out;
 wire o_branch_address_misaligned;
 
+
 //////////instr mem/////////////////////////////////
 wire instrom_read_en;//ctrl
 wire instrom_write_en;//ctrl
 wire[31:0] instrom_pc_in;
-//input wire[31:0] inst_mem_addr,
-//input wire[31:0] inst_mem_data,
+wire[31:0] inst_mem_addr;
+wire[31:0] inst_mem_data;
 wire[31:0] inst_rom_out;
 
+assign instrom_write_en=0;
+assign inst_mem_data =0;
+assign inst_mem_addr=0;
 ///////////////reg///////////////////////
 wire[4:0] rs1_addr;
 wire[4:0] rs2_addr;
@@ -125,9 +129,9 @@ wire[31:0] rd_writeback;
 wire branch_predict;
 wire hazard_detection;
 
+///////trap
 
-
-
+wire[1:0] trap;
 
 
 
@@ -161,6 +165,10 @@ assign ex_wire_value[201:0]={branch_predict,ex_control_values[8:0],adder_out[31:
 //branch_predict=194
 
 
+///trap handeling
+assign trap = o_memory_address_misaligned==1 ? `MEM_MISALIGN:
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000000 ?`E_CALL :
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :2'b11;
 
 ////////////////////////////////////////////////////////////
 ///////////////////instruction fetch///////////////////////
@@ -169,15 +177,19 @@ assign ex_wire_value[201:0]={branch_predict,ex_control_values[8:0],adder_out[31:
 
 //pc//////////////////////////////////
 
+
 pc uut_pc (clk,
         rst_n,
-        i_pc_stall,
+//        i_pc_stall,
+        trap,
         i_pc_is_branch_true,
         i_pc_branch_addr,
-        i_pc_writing_first_addr,
-        i_pc_instr_start_addr,
-        pc_out,
-        o_branch_address_misaligned);
+//        i_pc_writing_first_addr,
+//        i_pc_instr_start_addr,
+        pc_out
+//        o_branch_address_misaligned
+);
+
 
 
 
@@ -189,7 +201,7 @@ pc uut_pc (clk,
 inst_ram1 uut_inst(
 clk,
 instrom_pc_in,
-instrom_read_en,//CTRL
+//instrom_read_en,//CTRL
 inst_rom_out, ///// OUT
 instrom_write_en,//CTRL
 inst_mem_addr, /// EXT
@@ -210,18 +222,7 @@ assign instrom_pc_in=pc_out;
 ///////////////////instruction decode///////////////////////
 ///////////////////////////////////////////////////////////
 
-///////////////////////////////////////predicted branch address adder ////////////////
-//wire[32:0] cla_branch_pred_out;   already declared
-//wire[31:0] pred_branch_addr;
-carry_lookahead_adder uut_adder2(.i_add1(imm_out),.i_add2(if_id_reg[63:32]),.o_result(cla_branch_pred_out));
 
-
-
-assign pred_branch_addr=cla_branch_pred_out[31:0];
-
-
-assign rs1_addr=inst_rom_out[19:15];
-assign rs2_addr=inst_rom_out[24:20];
 
 //reg//////////////////////////////
 
@@ -236,6 +237,9 @@ regs uut_reg (clk,
             rs1_data,
             rs2_data);
 
+assign rs1_addr=inst_rom_out[19:15];
+assign rs2_addr=inst_rom_out[24:20];
+
 
 
 //IMM GEN/////////////////////////////////
@@ -243,20 +247,27 @@ regs uut_reg (clk,
 
 IMM_OP uut_imm_gen (inst_rom_out,imm_out);
 
+///////////////////////////////////////predicted branch address adder ////////////////
+//wire[32:0] cla_branch_pred_out;   already declared
+//wire[31:0] pred_branch_addr;
+carry_lookahead_adder uut_adder2(.i_add1(imm_out),.i_add2(if_id_reg[63:32]),.o_result(cla_branch_pred_out));
+assign pred_branch_addr=cla_branch_pred_out[31:0];
+
+
 //Ctrl
 
 //input wire setup
 
 control uut_ctrl ( 
 inst_rom_out,
-setup,
+//setup,
 ALU_operator,
 reg_write_en,
-instrom_write_en,
-instrom_read_en,
+//instrom_write_en,
+//instrom_read_en,
 br_type,
-i_pc_stall,
-i_pc_writing_first_addr,
+//i_pc_stall,
+//i_pc_writing_first_addr,
 ram_write_en ,
 ram_read_en ,
 ram_type,
@@ -265,11 +276,9 @@ op1_select,
 op2_select,
 BR_OR_RETURN_select,
 addr_sel,
-writeback_sel,
-reg_rd_ctrl
+writeback_sel
+//reg_rd_ctrl
  );
-
- 
 
 
 ////////////////////////////////////////////////////////////
@@ -408,9 +417,9 @@ assign o_rs1_data=rs1_data ;
 assign o_rs2_data= rs2_data ;
 
 // select btw load addr  and  rd addr
-assign rd_addr= reg_rd_ctrl==1?load_reg_addr : inst_rom_out[11:7]; //ext
+assign rd_addr=inst_rom_out[11:7]; //ext
 // select btw load data and writeback
-assign rd_data = reg_rd_ctrl==1?load_reg_data:rd_writeback; //ext
+assign rd_data = rd_writeback; //ext
 
 //alu
 assign o_ALU_out = ALU_out;
@@ -438,37 +447,45 @@ assign o_br_jump_addr = br_addr ;
 
 
 //pipelining
-always@(posedge clk)
+always@(posedge clk,negedge rst_n)
 begin
-    if(hazard_detection)
+    if (rst_n==0)
+    begin
+        if_id_reg<=0;
+        id_ex_reg<=0;
+        ex_mem_reg<=0;
+        mem_wb_reg<=0;
+        
+    end
+    else if(hazard_detection)
         begin
-        id_ex_reg=0;
-        if_id_reg=if_id_reg;
+        id_ex_reg<=0;
+        if_id_reg<=if_id_reg;
         end
     //if(branch_predict)
         //begin
         //o_pc=cla_adder_out;
-        if(branch_predict)
+      else if(branch_predict)
             begin
             
             end
-         if(id_ex_reg[181]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+      else if(id_ex_reg[181]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
-            id_ex_reg=0;
+            id_ex_reg<=0;
             //pc
             end
-         if(id_ex_reg[181]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+      else if(id_ex_reg[181]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
-            id_ex_reg=0;
+            id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
             end
           else
             begin
-            if_id_reg=if_wire_value;
-            id_ex_reg=id_wire_value;
+            if_id_reg<=if_wire_value;
+            id_ex_reg<=id_wire_value;
             end
-         ex_mem_reg=ex_wire_value;
-         mem_wb_reg=mem_wire_value;
+         ex_mem_reg<=ex_wire_value;
+         mem_wb_reg<=mem_wire_value;
          
 
 end
@@ -503,11 +520,7 @@ module forwrding(
                        (ex_mem_REG_write_en==1'b1 &&  ex_mem_opcode==(`OPCODE_JAL || `OPCODE_JALR) && MEM_WB_rd==ID_EX_rs2 )?2'b11:
                        2'b00;
                       
-   
-                       
-    
-    
-    
+
 endmodule
 
 
