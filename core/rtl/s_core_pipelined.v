@@ -68,7 +68,7 @@ wire[4:0] rs1_addr;
 wire[4:0] rs2_addr;
 wire[4:0]  rd_addr;
 wire[31:0] rd_data;
-wire reg_write_en;//ctrl
+wire wb_reg_write_en;//ctrl
 wire[31:0] rs1_data;
 wire[31:0] rs2_data;
 
@@ -96,6 +96,7 @@ wire BR_OR_RETURN_select;
 wire addr_sel;
 wire op1_select;
 wire op2_select;
+wire reg_write_en;//ctrl
 ////////////////////carry look ahead adder//////////////////////////
 wire[31:0] adder_in_1;
 wire[32:0] cla_adder_out;
@@ -143,10 +144,10 @@ assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
  
 
 /////////////////////////stage2////////////////////
-reg [181:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
-wire [181:0]id_wire_value;
+reg [213:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
+wire [213:0]id_wire_value;
 wire [20:0]id_control_values={ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
-assign id_wire_value[181:0]={branch_predict,id_control_values[20:0],rd_data[31:0],rs2_data[31:0],rs1_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
+assign id_wire_value[213:0]={imm_out,branch_predict,id_control_values[20:0],rd_data[31:0],rs2_data[31:0],rs1_data[31:0],pc_out[31:0],inst_rom_out[31:0]};
 
 //branch_predict=181
 ///////////////////////stage3////////////////////
@@ -233,19 +234,21 @@ regs uut_reg (clk,
             rs2_addr,
             rd_addr,
             rd_data,
-            reg_write_en,
+            wb_reg_write_en,
             rs1_data,
             rs2_data);
+//assign wb_reg_write_en =
+assign rs1_addr=if_id_reg[19:15];
+assign rs2_addr=if_id_reg[24:20];
 
-assign rs1_addr=inst_rom_out[19:15];
-assign rs2_addr=inst_rom_out[24:20];
+assign rd_addr=if_id_reg[11:7]; 
 
-
+assign rd_data = rd_writeback; 
 
 //IMM GEN/////////////////////////////////
 
 
-IMM_OP uut_imm_gen (inst_rom_out,imm_out);
+IMM_OP uut_imm_gen (if_id_reg[31:0],imm_out);
 
 ///////////////////////////////////////predicted branch address adder ////////////////
 //wire[32:0] cla_branch_pred_out;   already declared
@@ -259,7 +262,7 @@ assign pred_branch_addr=cla_branch_pred_out[31:0];
 //input wire setup
 
 control uut_ctrl ( 
-inst_rom_out,
+if_id_reg[31:0],
 //setup,
 ALU_operator,
 reg_write_en,
@@ -288,7 +291,7 @@ writeback_sel
 
 //ALU//////////////////////////////
 
-alu uut_alu(.i_alu_operator(ALU_operator),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
+alu uut_alu(.i_alu_operator(if_id_reg[]),.i_alu_operand_1(ALU_input_1),.i_alu_operand_2(ALU_input_2),.o_alu_output(ALU_out),.o_alu_br_cond(ALU_br_cond));
 
 
 
@@ -416,10 +419,8 @@ assign o_inst_data=inst_rom_out;
 assign o_rs1_data=rs1_data ;
 assign o_rs2_data= rs2_data ;
 
-// select btw load addr  and  rd addr
-assign rd_addr=inst_rom_out[11:7]; //ext
-// select btw load data and writeback
-assign rd_data = rd_writeback; //ext
+
+
 
 //alu
 assign o_ALU_out = ALU_out;
