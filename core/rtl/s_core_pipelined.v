@@ -342,18 +342,18 @@ assign ALU_input_1=(forward_mux1==2'b00)?mux1_output:
 
 
                                     //rs2                   //imm out
-assign mux2_output = id_ex_reg[133]==1 ? id_ex_reg[127:96] : id_ex_reg[182:150] ;
+assign mux2_output = id_ex_reg[133]==1 ? id_ex_reg[127:96] : id_ex_reg[182:151] ;
 assign ALU_input_2=(forward_mux2==2'b00)?mux2_output:
-                   (forward_mux2==2'b10)?ex_mem_reg[95:64]:
+                   (forward_mux2==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux2==2'b01)?rd_writeback:
-                   (forward_mux2==2'b11)?ex_mem_reg[191:160]
+                   (forward_mux2==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
 
 
 
 
 //return address or br addr select
-assign adder_in_1 = id_ex_reg[132]==1 ? id_ex_reg[182:150] : 32'h00000004 ; 
+assign adder_in_1 = id_ex_reg[132]==1 ? id_ex_reg[182:151] : 32'h00000004 ; 
 
 
 
@@ -398,8 +398,8 @@ ram_2 uut_ram(
 /////writeback///
 
 assign rd_writeback = mem_wb_reg[129:128] == `WB_RET_ADDR ? mem_wb_reg[127:96]    ://ret addr adder_out
-                     mem_wb_reg[129:128] == `WB_ALU_OUT  ? mem_wb_reg[162:131]     :
-                      mem_wb_reg[129:128] == `WB_LOAD_DATA? mem_wb_reg[95:64] : 32'b0 ;
+                     mem_wb_reg[129:128] == `WB_ALU_OUT  ? mem_wb_reg[162:131]     ://alu out
+                      mem_wb_reg[129:128] == `WB_LOAD_DATA? mem_wb_reg[95:64] : 32'b0 ;//ram data out
 
 
 
@@ -444,9 +444,24 @@ assign o_br_jump_addr = ex_br_addr ;
 
 assign br_taken = {id_ex_reg[128],br_is_branching};
 
-hazard_detection uut3(.ID_EX_rd(id_ex_reg[11:7]),.IF_ID_rs1(if_id_reg[19:15]),.IF_ID_rs2(if_id_reg[24:20]),.ID_EX_read_enable(id_ex_reg[140]),.hazard_detection(hazard_detection));
-forwarding uut1(.ID_EX_rs2(id_ex_reg[127:96]),.ID_EX_rs1(id_ex_reg[95:64]),.ex_mem_opcode(ex_mem_reg[6:0]),.ex_mem_REG_write_en(ex_mem_reg[169]),.mem_wb_REG_write_en(mem_wb_reg[130]),.ex_mem_Alu_out(ex_mem_reg[127:96]),
-                  .mem_wb_out(rd_writeback[31:0]),.EX_MEM_rd(ex_mem_reg[11:7]),.MEM_WB_rd(mem_wb_reg[11:7]),.forward_mux1(forward_mux1),.forward_mux2(forward_mux2));
+hazard_detection uut3(.ID_EX_rd(id_ex_reg[11:7]),
+    .IF_ID_rs1(if_id_reg[19:15]),
+    .IF_ID_rs2(if_id_reg[24:20]),
+    .ID_EX_read_enable(id_ex_reg[140]),
+    .hazard_detection(hazard_detection));
+
+forwarding uut1(.ID_EX_rs2(id_ex_reg[24:20]),
+    .ID_EX_rs1(id_ex_reg[19:15]),
+    .ex_mem_opcode(ex_mem_reg[6:0]),
+    .ex_mem_REG_write_en(ex_mem_reg[169]),
+    .mem_wb_REG_write_en(mem_wb_reg[130]),
+    .ex_mem_Alu_out(ex_mem_reg[127:96]),
+    .EX_MEM_rd(ex_mem_reg[11:7]),
+    .MEM_WB_rd(mem_wb_reg[11:7]),
+    .forward_mux1(forward_mux1),
+    .forward_mux2(forward_mux2));
+    
+
 branch_prediction(.clk(clk),.rst_n(rst_n), .br_taken(br_taken),.IF_ID_op(if_id_reg[6:0]),.ID_EX_op(id_ex_reg[6:0]),.branch_predict(branch_predict));
 
 
@@ -474,13 +489,13 @@ begin
 //            //pc_wire
 //            br_taken[1:0]=2'b11;
 //            end
-      else if(id_ex_reg[181]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+      else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
 //            br_taken[1:0]=2'b00;
             id_ex_reg<=0;
             //pc
             end
-      else if(id_ex_reg[181]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+      else if(id_ex_reg[128]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
             id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
@@ -568,7 +583,6 @@ module forwrding(
     input wire  ex_mem_REG_write_en,
     input wire  mem_wb_REG_write_en,
     input wire [31:0]ex_mem_Alu_out,
-    input wire [31:0] mem_wb_out,
     input wire [4:0]EX_MEM_rd,
     input wire [4:0]MEM_WB_rd,
     output wire [1:0]forward_mux1,
@@ -651,9 +665,9 @@ endmodule
 
 
 module hazard_detection(
-input wire [31:0] ID_EX_rd,
-input wire [31:0] IF_ID_rs1,
-input wire [31:0] IF_ID_rs2,
+input wire [4:0] ID_EX_rd,
+input wire [4:0] IF_ID_rs1,
+input wire [4:0] IF_ID_rs2,
 input wire    ID_EX_read_enable,
 output wire  hazard_detection
 );
