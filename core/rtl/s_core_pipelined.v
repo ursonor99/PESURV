@@ -576,7 +576,7 @@ endmodule
 
 
 
-module forwrding(
+module forwarding(
     input wire [4:0]ID_EX_rs2,
     input wire [4:0]ID_EX_rs1,
     input wire  [6:0]ex_mem_opcode,
