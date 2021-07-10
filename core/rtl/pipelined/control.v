@@ -47,16 +47,16 @@ output wire[1:0] MUX_writeback
     wire is_op;
     wire is_op_imm;
     
-    assign is_branch = instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2];
-    assign is_jal = instr_in[6] & instr_in[5] & ~instr_in[4] & instr_in[3] & instr_in[2];
-    assign is_jalr = instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & instr_in[2];
-    assign is_auipc = ~instr_in[6] & ~instr_in[5] & instr_in[4] & ~instr_in[3] & instr_in[2];
-    assign is_lui = ~instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & instr_in[2];
-    assign is_op = ~instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2];
-    assign is_op_imm = ~instr_in[6] & ~instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2];
+    assign is_branch = instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2] & instr_in[1] & instr_in[0];
+    assign is_jal = instr_in[6] & instr_in[5] & ~instr_in[4] & instr_in[3] & instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_jalr = instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_auipc = ~instr_in[6] & ~instr_in[5] & instr_in[4] & ~instr_in[3] & instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_lui = ~instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_op = ~instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_op_imm = ~instr_in[6] & ~instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2]  & instr_in[1] & instr_in[0];
     
-    assign is_load = ~instr_in[6] & ~instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2];
-    assign is_store = ~instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2];
+    assign is_load = ~instr_in[6] & ~instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2]  & instr_in[1] & instr_in[0];
+    assign is_store = ~instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2]  & instr_in[1] & instr_in[0];
     //assign is_system = instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2];
     //assign is_misc_mem = ~instr_in[6] & ~instr_in[5] & ~instr_in[4] & instr_in[3] & instr_in[2];
     
