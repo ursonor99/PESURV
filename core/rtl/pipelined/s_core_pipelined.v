@@ -336,24 +336,32 @@ wire [1:0]forward_mux1;
 wire [1:0]forward_mux2;
 wire [31:0]mux1_output;
 wire [31:0]mux2_output;
-                                            //rs1                //pc
-assign mux1_output = id_ex_reg[134]==1 ? id_ex_reg[95:64] : id_ex_reg[63:32] ;
-assign ALU_input_1=(forward_mux1==2'b00)?mux1_output:
+                                           
+
+
+
+                                                                                    
+assign mux1_output=(forward_mux1==2'b00)?id_ex_reg[95:64]:      //rs1
                    (forward_mux1==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux1==2'b01)?rd_writeback:
                    (forward_mux1==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
+                                         
+assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
 
 
-                                    //rs2                   //imm out
-assign mux2_output = id_ex_reg[133]==1 ? id_ex_reg[127:96] : id_ex_reg[181:150] ;
-assign ALU_input_2=(forward_mux2==2'b00)?mux2_output:
+
+
+                                    
+
+
+assign mux2_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:
                    (forward_mux2==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux2==2'b01)?rd_writeback:
                    (forward_mux2==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
 
-
+assign ALU_input_2 = id_ex_reg[133]==1 ?mux2_output: id_ex_reg[181:150];
 
 
 //return address or br addr select
@@ -605,16 +613,16 @@ module forwarding(
     
     );
     //forwarding unit
-    assign forward_mux1=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && ( ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM ) && EX_MEM_rd==ID_EX_rs1 )?2'b10:
+    assign forward_mux1=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM  && EX_MEM_rd==ID_EX_rs1 )?2'b10:
                        (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs1)?2'b01:
-                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  (ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR) && MEM_WB_rd==ID_EX_rs1 )?2'b11:
+                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR && MEM_WB_rd==ID_EX_rs1 )?2'b11:
                        2'b00;
                        
                        
     
-   assign forward_mux2=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && (ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM ) && EX_MEM_rd==ID_EX_rs2 )?2'b10:
-                       (mem_wb_REG_write_en==1'b1  &&(mem_wb_opcode==`OPCODE_OP)&& MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs2)?2'b01:
-                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  (ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR) && MEM_WB_rd==ID_EX_rs2 )?2'b11:
+   assign forward_mux2=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0 && ex_mem_opcode==`OPCODE_OP || ex_mem_opcode==`OPCODE_OP_IMM  && EX_MEM_rd==ID_EX_rs2 )?2'b10:
+                       (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs2)?2'b01:
+                       (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0 &&  ex_mem_opcode==`OPCODE_JAL || ex_mem_opcode==`OPCODE_JALR && MEM_WB_rd==ID_EX_rs2 )?2'b11:
                        2'b00;
                       
 
