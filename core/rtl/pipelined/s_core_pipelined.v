@@ -347,7 +347,7 @@ assign mux1_output=(forward_mux1==2'b00)?id_ex_reg[95:64]:      //rs1
                    (forward_mux1==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
                                          
-assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
+assign ALU_input_1 = id_ex_reg[134]==1 ? mux1_output : id_ex_reg[63:32] ;//pc
 
 
 
@@ -440,7 +440,7 @@ assign o_RAM_data_out = ram_data_out;
 assign o_imm_out = imm_out ;
 //wb
 assign o_rd_writeback = rd_writeback;
-assign o_writeback_sel=writeback_sel;
+assign o_writeback_sel=mem_wb_reg[129:128];
 assign o_adder_out = adder_out;
 assign o_br_jump_addr = ex_br_addr ;
 
