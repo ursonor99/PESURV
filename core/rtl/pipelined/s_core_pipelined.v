@@ -440,11 +440,11 @@ assign o_RAM_data_out = ram_data_out;
 assign o_imm_out = imm_out ;
 //wb
 assign o_rd_writeback = rd_writeback;
-<<<<<<< HEAD
+
 assign o_writeback_sel=mem_wb_reg[129:128];
-=======
+
 assign o_writeback_sel= mem_wb_reg[129:128];
->>>>>>> 2907762e2a88f55fca467e806d6bde4314c41ea0
+
 assign o_adder_out = adder_out;
 assign o_br_jump_addr = ex_br_addr ;
 
