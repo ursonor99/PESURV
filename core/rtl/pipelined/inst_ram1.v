@@ -56,11 +56,9 @@ integer n=0;
 initial
     begin
 //        for(i = 0; i < 1024 ;i = i+1) inst[i] = 32'b0;
-<<<<<<< HEAD
+
         $readmemh("rv32ui-p-add.mem", inst);
-=======
-        $readmemh("mem_trail.mem", inst);
->>>>>>> cdcdc192e919d9678268b18c862bde94fe3ec7f4
+
         for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end
 
