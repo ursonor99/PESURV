@@ -98,7 +98,7 @@ rst_n=1;
 //load_reg_data=32'h00000001;  
 //#10
 //inst_mem_addr=32'h00000008;
-//inst_mem_data=32'b00000000011000100000000000110011;//addition
+//inst_mem_data=32'b00000000011000100000000110110011;//addition
 //load_reg_addr=5'b00110;  //rs2
 //load_reg_data=32'h00000004;  
 

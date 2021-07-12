@@ -148,15 +148,15 @@ assign if_wire_value[64:0]={pc_out[31:0],inst_rom_out[31:0]};
  
 
 /////////////////////////stage2////////////////////
-reg [182:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
-wire [182:0]id_wire_value;
-wire [21:0]id_control_values={wb_reg_write_en,ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
-assign id_wire_value[182:0]={imm_out,id_control_values[21:0],branch_predict,rs2_data[31:0],rs1_data[31:0],if_id_reg[63:32],if_id_reg[31:0]};
+reg [181:0]id_ex_reg; //id_ex_reg[63:32]  // instr :id_ex_reg[31:0] // rs1_data :id_ex_reg[:64]
+wire [181:0]id_wire_value;
+wire [20:0]id_control_values={ALU_operator[4:0],reg_write_en,br_type[1:0],ram_write_en ,ram_read_en ,ram_type[3:0],ram_sign,op1_select,op2_select,BR_OR_RETURN_select,addr_sel,writeback_sel[1:0]};
+assign id_wire_value[181:0]={imm_out[31:0],id_control_values[20:0],branch_predict,rs2_data[31:0],rs1_data[31:0],if_id_reg[63:32],if_id_reg[31:0]};
 
-///////////////////////stage3////////////////////
+///////////////////////stage3////////////////////e
 reg [169:0]ex_mem_reg;
 wire [169:0]ex_wire_value;
-wire [9:0]ex_control_values={id_ex_reg[150],id_ex_reg[141] ,id_ex_reg[140] ,id_ex_reg[139:136],id_ex_reg[135],id_ex_reg[130:129]};
+wire [9:0]ex_control_values={id_ex_reg[144],id_ex_reg[141] ,id_ex_reg[140] ,id_ex_reg[139:136],id_ex_reg[135],id_ex_reg[130:129]};
 assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],id_ex_reg[127:96],id_ex_reg[63:32],id_ex_reg[31:0]};
 
 
@@ -231,7 +231,7 @@ assign instrom_pc_in=pc_out;
 //reg//////////////////////////////
 
 
-regs uut_reg (clk,
+regs uut_reg(clk,
             rst_n,
             rs1_addr,
             rs2_addr,
@@ -336,28 +336,36 @@ wire [1:0]forward_mux1;
 wire [1:0]forward_mux2;
 wire [31:0]mux1_output;
 wire [31:0]mux2_output;
-                                            //rs1                //pc
-assign mux1_output = id_ex_reg[134]==1 ? id_ex_reg[95:64] : id_ex_reg[63:32] ;
-assign ALU_input_1=(forward_mux1==2'b00)?mux1_output:
+                                           
+
+
+
+                                                                                    
+assign mux1_output=(forward_mux1==2'b00)?id_ex_reg[95:64]:      //rs1
                    (forward_mux1==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux1==2'b01)?rd_writeback:
                    (forward_mux1==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
+                                         
+assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
 
 
-                                    //rs2                   //imm out
-assign mux2_output = id_ex_reg[133]==1 ? id_ex_reg[127:96] : id_ex_reg[182:151] ;
-assign ALU_input_2=(forward_mux2==2'b00)?mux2_output:
+
+
+                                    
+
+
+assign mux2_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:
                    (forward_mux2==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux2==2'b01)?rd_writeback:
                    (forward_mux2==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
 
-
+assign ALU_input_2 = id_ex_reg[133]==1 ?mux2_output: id_ex_reg[181:150];
 
 
 //return address or br addr select
-assign adder_in_1 = id_ex_reg[132]==1 ? id_ex_reg[182:151] : 32'h00000004 ; 
+assign adder_in_1 = id_ex_reg[132]==1 ? id_ex_reg[181:150] : 32'h00000004 ; 
 
 
 
@@ -498,29 +506,31 @@ begin
 //            //pc_wire
 //            br_taken[1:0]=2'b11;
 //            end
-      else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+    else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
 //            br_taken[1:0]=2'b00;
             id_ex_reg<=0;
             //pc
             end
-      else if(id_ex_reg[128]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
+    else if(id_ex_reg[128]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
             id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
             end
-          else
-            begin
-            if_id_reg<=if_wire_value;
-            id_ex_reg<=id_wire_value;
-            end
-      if (rst_n==1)
-         begin
+    else
+           begin
+           if_id_reg<=if_wire_value;
+           id_ex_reg<=id_wire_value;
+           $display("%h %h %h ",id_ex_reg[134],ex_mem_reg[169],mem_wb_reg[130]);
+           end
+    if (rst_n==1)
+        begin
          ex_mem_reg<=ex_wire_value;
          mem_wb_reg<=mem_wire_value;
-         end
          
-
+        end
+        
+$display("%h forward_mux1  %h forward_mux2",forward_mux1,forward_mux2);
 end
 
 
@@ -592,6 +602,7 @@ module forwarding(
     input wire [4:0]ID_EX_rs2,
     input wire [4:0]ID_EX_rs1,
     input wire  [6:0]ex_mem_opcode,
+    input wire  [6:0]mem_wb_opcode,
     input wire  ex_mem_REG_write_en,
     input wire  mem_wb_REG_write_en,
     input wire [31:0]ex_mem_Alu_out,

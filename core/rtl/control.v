@@ -7,6 +7,7 @@
 
 
 
+
 module control(
 input wire[31:0] instr_in,
 //input wire       setup ,
