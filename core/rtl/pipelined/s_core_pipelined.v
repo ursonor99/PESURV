@@ -244,7 +244,7 @@ assign wb_reg_write_en = mem_wb_reg[130];
 assign rs1_addr=if_id_reg[19:15];
 assign rs2_addr=if_id_reg[24:20];
 
-assign rd_addr=if_id_reg[11:7]; 
+assign rd_addr=mem_wb_reg[11:7]; 
 
 assign rd_data = rd_writeback; 
 

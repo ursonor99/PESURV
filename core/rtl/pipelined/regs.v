@@ -68,9 +68,9 @@ output wire[31:0] o_rs2_data
     else if(i_write_en==1'b1 &&  i_rd_addr != 5'b00000)
     begin
             reg_x[i_rd_addr]<=i_rd_data;
-            $display("writing to reg address %b the value %b",i_rd_addr,reg_x[i_rd_addr]);
+            //$display("writing to reg address %b the value %b",i_rd_addr,reg_x[i_rd_addr]);
     end        
-        
+        $display("%h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h",reg_x[1],reg_x[2],reg_x[3],reg_x[4],reg_x[5],reg_x[6],reg_x[7],reg_x[8],reg_x[9],reg_x[10],reg_x[11],reg_x[12],reg_x[13],reg_x[14],reg_x[15],reg_x[16],reg_x[17],reg_x[18],reg_x[19],reg_x[20],reg_x[21],reg_x[22],reg_x[23],reg_x[24],reg_x[25],reg_x[26],reg_x[27],reg_x[28],reg_x[29],reg_x[30],reg_x[31],reg_x[32]);
     end
     
     

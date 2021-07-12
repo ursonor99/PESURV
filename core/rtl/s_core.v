@@ -113,7 +113,7 @@ output wire[31:0] o_rd_writeback
 
 
 
-wire[1:0] trap;
+wire[2:0] trap;
 wire o_memory_address_misaligned;             
 
 
@@ -163,12 +163,22 @@ inst_mem_addr, /// EXT
 inst_mem_data   /// EXT
 );
 
-
+reg reg_load_handle;
+wire wire_load_handle;
+assign wire_load_handle = inst_rom_out[6:2] == 5'b00000 && reg_load_handle==0 ? 1'b1:0;
+always @(posedge clk)
+begin 
+if(rst_n==0) 
+        reg_load_handle<=0;
+else
+        reg_load_handle<=wire_load_handle;
+end
 
 
 assign trap = o_memory_address_misaligned==1 ? `MEM_MISALIGN:
               inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000000 ?`E_CALL :
-              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :2'b11;
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :
+               wire_load_handle==1 ? 3'b100 :3'b000;
 
 //reg//////////////////////////////
 
