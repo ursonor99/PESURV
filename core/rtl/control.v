@@ -116,7 +116,7 @@ output wire[1:0] MUX_writeback
                           (is_load && FN3==`FN3_LH)|| (is_load && FN3==`FN3_LHU) || (is_store && FN3==`FN3_SH)  ?  `HALFWORD :
                           (is_load && FN3==`FN3_LW)  || (is_store && FN3==`FN3_SW)                         ?  `FULLWORD :
                           4'b0000 ; 
-    assign RAM_sign    = (is_load && `FN3_LBU) || (is_load && `FN3_LHU) ? 1'b0 : 
+    assign RAM_sign    = (is_load && FN3==`FN3_LBU) || (is_load && FN3==`FN3_LHU) ? 1'b0 : 
                           1'b1 ;
                           
     

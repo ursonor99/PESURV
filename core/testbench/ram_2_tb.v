@@ -51,7 +51,7 @@ module ram_2_tb;
     initial 
     begin
     
-    clk=0;
+    clk=1;
     sign=0;
     ram_we=0;
     ram_re=0;
@@ -108,40 +108,40 @@ module ram_2_tb;
 //    ram_wdat=32'h000000de;
 //    ram_addr=32'h00000045;
     
-//    //write fullword
-    #10;
-    ram_we=1;
-    sign=0;
-    ram_type=4'b1111;
-    ram_wdat=32'h00001101;
-    ram_addr=32'h00000004;
+////    //write fullword
+//    #10;
+//    ram_we=1;
+//    sign=0;
+//    ram_type=4'b1111;
+//    ram_wdat=32'h00001101;
+//    ram_addr=32'h00000004;
     
-//    //read fullword
-    #10;
-    ram_we=0;
-    ram_re=1;
-    ram_type=4'b1111;
-    sign=1;
-    ram_addr=32'h00000004;
+////    //read fullword
+//    #10;
+//    ram_we=0;
+//    ram_re=1;
+//    ram_type=4'b1111;
+//    sign=1;
+//    ram_addr=32'h00000004;
     
-//    //write half word
-    #10;
-    ram_we=1;
-    ram_re=0;
-    ram_type=4'b0011;
-    sign=1;
-    ram_wdat=32'h0000f0f0;
-    ram_addr=32'h00000040;
+////    //write half word
+//    #10;
+//    ram_we=1;
+//    ram_re=0;
+//    ram_type=4'b0011;
+//    sign=1;
+//    ram_wdat=32'h0000f0f0;
+//    ram_addr=32'h00000040;
     
     
 //    //write byte 
-    #10;
-    ram_we=1;
-    ram_re=0;
-    ram_type=4'b0001;
-    sign=1;
-    ram_wdat=32'h000000ff;
-    ram_addr=32'h00000042;
+//    #10;
+//    ram_we=1;
+//    ram_re=0;
+//    ram_type=4'b0001;
+//    sign=1;
+//    ram_wdat=32'h000000ff;
+//    ram_addr=32'h00000042;
 
 // read halfword
 
@@ -168,8 +168,14 @@ module ram_2_tb;
     ram_type=4'b1111;
     sign=1;
     ram_addr=32'h00000040;
+    #10;
+    ram_we=0;
+    ram_re=1;
+    ram_type=4'b1111;
+    sign=1;
+    ram_addr=32'h00002000;
 
-
+    
     #10;
     $finish;
     

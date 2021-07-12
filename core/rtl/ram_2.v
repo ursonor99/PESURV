@@ -1,4 +1,5 @@
 
+
 `timescale 1ns / 1ps
 `include "GLOBALS.v"
 
@@ -185,11 +186,6 @@ module ram_2 #(
     output  wire     [w-1:0] data_reg;
     output  wire o_memory_address_misaligned;
     
-//reg double_clk=0;
-//always @(posedge clk or negedge clk)
-//begin
-//double_clk <= ~double_clk;
-//end
     
 wire[31:0] ram_word_aligned_addr;
 wire[1:0] ram_word__position;
@@ -197,8 +193,8 @@ assign ram_word_aligned_addr = {2'b00,ram_addr[31:2]};
 assign ram_word__position=ram_addr[1:0];
 
 
-reg [3 : 0] wea;
-reg [31 : 0] dina; 
+wire [3 : 0] wea;
+wire [31 : 0] dina; 
 wire[31:0] data_read ;
 blk_mem_gen_0 bram_isnt (
   .clka(clk),    // input wire clk
@@ -225,57 +221,73 @@ assign o_memory_address_misaligned = memory_address_misaligned ;
 
 
 
-always @(*)
+assign wea = memory_address_misaligned==1'b0 && ram_we && ram_type==`FULLWORD ? 4'b1111 :
+              memory_address_misaligned==1'b0 &&  ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 ? 4'b0011 :
+             memory_address_misaligned==1'b0 &&  ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 ? 4'b1100 :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b00 ? 4'b0001 : 
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b01 ? 4'b0010 :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b10 ? 4'b0100 :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b11 ? 4'b1000 : 4'b0000;
+               
+assign dina =memory_address_misaligned==1'b0 &&  ram_we && ram_type==`FULLWORD ? ram_wdat :
+              memory_address_misaligned==1'b0 &&  ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 ? ram_wdat :
+              memory_address_misaligned==1'b0 &&  ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 ? {ram_wdat[2*h-1:0],16'b0} :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b00 ? {24'b0,ram_wdat[h-1:0]} : 
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b01 ? {16'b0,ram_wdat[h-1:0],8'b0} :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b10 ?{8'b0,ram_wdat[h-1:0],16'b0} :
+              memory_address_misaligned==1'b0 &&  ram_we &&  ram_type==`BYTE && ram_word__position==2'b11 ? {ram_wdat[h-1:0],24'b0} : 32'b0000;             
+             
+//always @(*)
 
-begin
-if (memory_address_misaligned==1'b0)
-begin
-            if(ram_we && ram_type==`FULLWORD)
-            begin
-                wea=4'b1111;
-                dina=ram_wdat;
-             end
+//begin
+//if (memory_address_misaligned==1'b0)
+//begin
+//            if(ram_we && ram_type==`FULLWORD)
+//            begin
+//                wea=4'b1111;
+//                dina=ram_wdat;
+//             end
                 
-            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 )
-            begin
-                wea=4'b0011;
-                dina=ram_wdat;
-            end    
-            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 )
-            begin    
-                wea=4'b1100;
-                dina[4*h-1:2*h]= ram_wdat[2*h-1:0];    
-           end
+//            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 )
+//            begin
+//                wea=4'b0011;
+//                dina=ram_wdat;
+//            end    
+//            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 )
+//            begin    
+//                wea=4'b1100;
+//                dina[4*h-1:2*h]= ram_wdat[2*h-1:0];    
+//           end
 
-            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b00)
-                begin
-                dina[h-1:0]=ram_wdat[h-1:0]; 
-                wea=4'b0001;
-                end              
-            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b01)
-            begin
-                dina[2*h-1:h]=ram_wdat[h-1:0];
-                wea=4'b0010;
-            end    
-            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b10)
-            begin
-                dina[3*h-1:2*h]=ram_wdat[h-1:0];
-                wea=4'b0100;
-            end
-            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b11)
-            begin
-                dina[4*h-1:3*h]=ram_wdat[h-1:0];
-                wea=4'b1000;
-            end
-            else 
-                begin
-                    dina=0;
-                    wea=0;
-                end
-end
-           //$display("ram2= %h %h %b %b %b %b ",{Bram[address4],Bram[address3],Bram[address2],Bram[address1]},address1,ram_type[3:0],ram_we,ram_re,sign);
+//            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b00)
+//                begin
+//                dina[h-1:0]=ram_wdat[h-1:0]; 
+//                wea=4'b0001;
+//                end              
+//            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b01)
+//            begin
+//                dina[2*h-1:h]=ram_wdat[h-1:0];
+//                wea=4'b0010;
+//            end    
+//            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b10)
+//            begin
+//                dina[3*h-1:2*h]=ram_wdat[h-1:0];
+//                wea=4'b0100;
+//            end
+//            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b11)
+//            begin
+//                dina[4*h-1:3*h]=ram_wdat[h-1:0];
+//                wea=4'b1000;
+//            end
+//            else 
+//                begin
+//                    dina=0;
+//                    wea=0;
+//                end
+//end
+//           //$display("ram2= %h %h %b %b %b %b ",{Bram[address4],Bram[address3],Bram[address2],Bram[address1]},address1,ram_type[3:0],ram_we,ram_re,sign);
 
-end
+//end
 
 
 //read
@@ -333,11 +345,6 @@ assign data_reg=(memory_address_misaligned==1'b0 && sign==1 && ram_type==`BYTE &
 //                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
                 (memory_address_misaligned==1'b0 && ram_type==`FULLWORD && ram_re==1)?fullword:
                  32'b0;
-
-
-
-
-
 
 
 
