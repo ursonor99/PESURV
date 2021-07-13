@@ -501,10 +501,6 @@ begin
         id_ex_reg<=0;
         if_id_reg<=if_id_reg;
         end
-<<<<<<< HEAD
-    
-     
-=======
     else if(branch_predict==1 && br_taken!=2'b01 && br_taken!=2'b10)
         begin
         if_id_reg<=0;
@@ -515,7 +511,6 @@ begin
 //            //pc_wire
 //            br_taken[1:0]=2'b11;
 //            end
->>>>>>> 0f223bef7ded55d9127108aa95bd7991ef75f2ee
     else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
 //            br_taken[1:0]=2'b00;
