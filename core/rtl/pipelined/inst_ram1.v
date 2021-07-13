@@ -59,7 +59,7 @@ initial
 
 
 
-        $readmemh("rv32ui-p-add.mem", inst);
+        $readmemh("rv32ui-p-auipc.mem", inst);
 
         for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end

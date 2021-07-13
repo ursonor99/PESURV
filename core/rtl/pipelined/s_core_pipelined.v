@@ -497,9 +497,11 @@ begin
         id_ex_reg<=0;
         if_id_reg<=if_id_reg;
         end
-    //if(branch_predict)
-        //begin
-        //o_pc=cla_adder_out;
+    else if(branch_predict==1 && br_taken!=2'b01 && br_taken!=2'b10)
+        begin
+        if_id_reg<=0;
+        id_ex_reg<=id_wire_value;
+        end
 //      else if(branch_predict)
 //            begin
 //            //pc_wire
@@ -508,11 +510,13 @@ begin
     else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
 //            br_taken[1:0]=2'b00;
+            if_id_reg<=0;
             id_ex_reg<=0;
             //pc
             end
     else if(id_ex_reg[128]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
+            if_id_reg<=0;
             id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
             end
@@ -537,13 +541,15 @@ end
 
 wire[31:0] ultimate_pc_input_br_address ;
 wire ultimate_pc_is_branching ;
-assign  ultimate_pc_input_br_address = branch_predict==1 ?  pred_branch_addr :
-                                       br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? ex_br_addr :
-                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[63:32]+3'b100 :31'b0;
+assign  ultimate_pc_input_br_address = br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? ex_br_addr :
+                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[63:32]+3'b100 :
+                                       branch_predict==1 ?  pred_branch_addr :
+                                       31'b0;
                                        
-assign ultimate_pc_is_branching = branch_predict==1 ? 1'b1 :
-                                  br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
-                                  br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :1'b0;
+assign ultimate_pc_is_branching = br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
+                                  br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
+                                  branch_predict==1 ? 1'b1 :
+                                  1'b0;
 
 assign i_pc_branch_addr = ultimate_pc_input_br_address;
 
