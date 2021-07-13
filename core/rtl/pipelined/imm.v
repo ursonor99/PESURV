@@ -96,7 +96,7 @@ module IMM_OP (
     assign i_type = { {20{INSTR[31]}}, INSTR[31:20] };
     assign s_type = { {20{INSTR[31]}}, INSTR[31:25], INSTR[11:7] };
     assign b_type = { {19{INSTR[31]}}, INSTR[31], INSTR[7], INSTR[30:25], INSTR[11:8], 1'b0 };
-    assign u_type = { INSTR[31:12], 12'h000 };
+    assign u_type = { INSTR[31:12], 12'h0 };
     assign j_type = { {11{INSTR[31]}}, INSTR[31], INSTR[19:12], INSTR[20], INSTR[30:21], 1'b0 };
     assign csr_type = { 27'b0, INSTR[19:15] };
     

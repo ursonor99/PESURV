@@ -501,14 +501,8 @@ begin
         id_ex_reg<=0;
         if_id_reg<=if_id_reg;
         end
-    //if(branch_predict)
-        //begin
-        //o_pc=cla_adder_out;
-//      else if(branch_predict)
-//            begin
-//            //pc_wire
-//            br_taken[1:0]=2'b11;
-//            end
+    
+     
     else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
 //            br_taken[1:0]=2'b00;
