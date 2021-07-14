@@ -347,7 +347,7 @@ assign mux1_output=(forward_mux1==2'b00)?id_ex_reg[95:64]:      //rs1
                    (forward_mux1==2'b11)?ex_mem_reg[159:128]
                                          :32'b0;
                                          
-assign ALU_input_1 = id_ex_reg[134]==1 ? mux1_output : id_ex_reg[63:32] ;//pc
+assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
 
 
 
@@ -440,11 +440,7 @@ assign o_RAM_data_out = ram_data_out;
 assign o_imm_out = imm_out ;
 //wb
 assign o_rd_writeback = rd_writeback;
-
-assign o_writeback_sel=mem_wb_reg[129:128];
-
 assign o_writeback_sel= mem_wb_reg[129:128];
-
 assign o_adder_out = adder_out;
 assign o_br_jump_addr = ex_br_addr ;
 
@@ -501,16 +497,26 @@ begin
         id_ex_reg<=0;
         if_id_reg<=if_id_reg;
         end
-    
-     
+    else if(branch_predict==1 && br_taken!=2'b01 && br_taken!=2'b10)
+        begin
+        if_id_reg<=0;
+        id_ex_reg<=id_wire_value;
+        end
+//      else if(branch_predict)
+//            begin
+//            //pc_wire
+//            br_taken[1:0]=2'b11;
+//            end
     else if(id_ex_reg[128]==0 && br_is_branching==1'b1 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
-
+//            br_taken[1:0]=2'b00;
+            if_id_reg<=0;
             id_ex_reg<=0;
             //pc
             end
     else if(id_ex_reg[128]==1 && br_is_branching==1'b0 && id_ex_reg[6:0]==`OPCODE_BRANCH )
             begin
+            if_id_reg<=0;
             id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
             end
@@ -535,14 +541,16 @@ end
 
 wire[31:0] ultimate_pc_input_br_address ;
 wire ultimate_pc_is_branching ;
-assign  ultimate_pc_input_br_address = branch_predict==1 ?  pred_branch_addr :
-                                       br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? ex_br_addr :
-                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[63:32]+3'b100 :31'b0;
+assign  ultimate_pc_input_br_address = br_taken==2'b01 && (id_ex_reg[6:0]==`OPCODE_BRANCH || id_ex_reg[6:0]==`OPCODE_JALR)? ex_br_addr :
+                                       br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? id_ex_reg[63:32]+3'b100 :
+                                       branch_predict==1 ?  pred_branch_addr :
+                                       31'b0;
                                        
-assign ultimate_pc_is_branching = branch_predict==1 ? 1'b1 :
-                                  br_taken==2'b01 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
-                                  br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :1'b0;
-
+assign ultimate_pc_is_branching = br_taken==2'b01 && (id_ex_reg[6:0]==`OPCODE_BRANCH || id_ex_reg[6:0]==`OPCODE_JALR )? 1'b1 :
+                                  br_taken==2'b10 && id_ex_reg[6:0]==`OPCODE_BRANCH ? 1'b1 :
+                                  branch_predict==1 ? 1'b1 :
+                                  1'b0;
+//|| id_ex_reg[6:0]==`OPCODE_JALR)
 assign i_pc_branch_addr = ultimate_pc_input_br_address;
 
 assign i_pc_is_branch_true = ultimate_pc_is_branching;
@@ -693,7 +701,7 @@ output wire  branch_predict
      
      end
     
-    assign branch_predict=  IF_ID_op == `OPCODE_JAL || IF_ID_op == `OPCODE_JALR ? 1'b1 :
+    assign branch_predict=  IF_ID_op == `OPCODE_JAL ? 1'b1 :
                             IF_ID_op !=`OPCODE_BRANCH ? 1'b0 :
                             (branch_reg==2'b00 || branch_reg==2'b01)?1'b1:
                                                                      1'b0;
