@@ -342,9 +342,9 @@ wire [31:0]mux2_output;
 
                                                                                     
 assign mux1_output=(forward_mux1==2'b00)?id_ex_reg[95:64]:      //rs1
-                   (forward_mux1==2'b10)?ex_mem_reg[127:96]:
-                   (forward_mux1==2'b01)?rd_writeback:
-                   (forward_mux1==2'b11)?ex_mem_reg[159:128]
+                   (forward_mux1==2'b10)?ex_mem_reg[127:96]:     //alu out
+                   (forward_mux1==2'b01)?rd_writeback:             //wb
+                   (forward_mux1==2'b11)?ex_mem_reg[159:128]         //adder out
                                          :32'b0;
                                          
 assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
@@ -355,10 +355,10 @@ assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
                                     
 
 
-assign mux2_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:
-                   (forward_mux2==2'b10)?ex_mem_reg[127:96]:
-                   (forward_mux2==2'b01)?rd_writeback:
-                   (forward_mux2==2'b11)?ex_mem_reg[159:128]
+assign mux2_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:              //rs2
+                   (forward_mux2==2'b10)?ex_mem_reg[127:96]:            ////alu out
+                   (forward_mux2==2'b01)?rd_writeback:                //wb
+                   (forward_mux2==2'b11)?ex_mem_reg[159:128]       //adder out
                                          :32'b0;
 
 assign ALU_input_2 = id_ex_reg[133]==1 ?mux2_output: id_ex_reg[181:150];
