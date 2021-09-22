@@ -70,7 +70,7 @@ o_writeback_sel,
 
 
 always 
-#5 clk=~clk;
+#10 clk=~clk;
 initial 
 begin
 rst_n=0;
