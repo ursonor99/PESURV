@@ -39,8 +39,9 @@ module uart_tx_fifo
    input [7:0] i_Tx_Byte, 
    output      o_Tx_Active,
    output reg  o_Tx_Serial,
-   output      o_Tx_Done
-   //output reg[2:0]     r_SM_Main
+   output      o_Tx_Done,
+   output reg[2:0]     r_SM_Main, //extra 
+   output [7:0] r_Read_Data // extra
    );
   
   parameter s_IDLE         = 3'b000;
@@ -58,7 +59,7 @@ module uart_tx_fifo
   reg          r_Read_Flag   = 0;
   reg          r_Partity_Bit = 0; 
   
-  wire  [7:0] r_Read_Data;
+  //wire  [7:0] r_Read_Data;
   wire empty,full;
   
   uart_fifo #(.WIDTH(8)) t_buffer(i_Clock, i_Reset, r_Read_Flag, r_Read_Data, i_Tx_DV, i_Tx_Byte, empty, full);
@@ -202,7 +203,7 @@ module uart_tx_fifo
         // Stay here 1 clock
         s_CLEANUP :
           begin
-            r_Tx_Done <= 1'b1;
+            r_Tx_Done <= 1'b0;
             r_SM_Main <= s_IDLE;
             r_Read_Flag  = 1'b0; // w/o this the Tx will repeat the last buffer value if the Tx_Send is held HIGH i.e fifo doesnt refresh empty fast enough
           end
