@@ -52,6 +52,8 @@ wire[31:0] o_rd_writeback;
  wire[182:0] o_id_ex;
  wire[169:0] o_ex_mem;
 wire[162:0] o_mem_wb;
+wire [3:0] wea;
+wire [31:0] ram_word_aligned_addr;
 
 s_core_pipelined uut(
 clk,
@@ -78,8 +80,10 @@ o_writeback_sel,
  o_if_id,
  o_id_ex,
  o_ex_mem,
- o_mem_wb
-);
+ o_mem_wb,
+ wea,
+ ram_word_aligned_addr
+ );
 
 
 always 
@@ -138,9 +142,9 @@ rst_n=1;
 
 
 
-////#10
-////inst_mem_addr=32'h00000042;
-////inst_mem_data=32'b00000000010000011000110001100111; // jalr to pc 8 
+//#10
+//inst_mem_addr=32'h00000042;
+//inst_mem_data=32'b00000000010000011000110001100111; // jalr to pc 8 
 
 //#10
 

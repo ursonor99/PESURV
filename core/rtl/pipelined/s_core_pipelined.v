@@ -41,7 +41,9 @@ output wire[31:0] o_rd_writeback,
 output wire[64:0] o_if_id,
 output wire[182:0] o_id_ex,
 output wire[169:0] o_ex_mem,
-output wire[162:0] o_mem_wb
+output wire[162:0] o_mem_wb,
+output wire [3:0] wea,
+output wire [31:0]ram_word_aligned_addr
 );
 
 
@@ -394,7 +396,9 @@ ram_2 uut_ram(
     //ram_dout,
     ex_mem_reg[167],//read en
     ram_data_out ,
-    o_memory_address_misaligned
+    o_memory_address_misaligned,
+    wea,
+    ram_word_aligned_addr
     );
     
     
