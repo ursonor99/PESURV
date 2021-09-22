@@ -33,15 +33,15 @@
 // (10000000)/(115200) = 87
   
 module uart_rx_fifo 
-  #(parameter CLKS_PER_BIT = 5)//10 ns for each pulse
+  #(parameter CLKS_PER_BIT = 4)//10 ns for each pulse
   (
    input        i_Clock,
    input        i_Reset,
    input        i_Rx_Serial,
    output       o_Rx_DV,
    output [7:0] o_Rx_Byte,
-   input        i_Read_Flag
-   //output reg [2:0] r_SM_Main
+   input        i_Read_Flag,
+   output reg [2:0] r_SM_Main
    );
    
   parameter s_IDLE         = 3'b000;
@@ -89,7 +89,7 @@ module uart_rx_fifo
             r_Rx_DV       <= 1'b0;
             r_Clock_Count <= 0;
             r_Bit_Index   <= 0;
-             
+            write_flag <= 1'b0; // Stop writing to the Fifo
             if (r_Rx_Data == 1'b0)          // Start bit detected
               r_SM_Main <= s_RX_START_BIT;
             else

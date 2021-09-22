@@ -22,7 +22,9 @@
 //Dma acknowledge will have to be implemented somehow in the control side, so that we can just enter off state. This is required otherwise idle isnt a valid dma state,it has to relenquish the bus
 //Handle the fifo overwrites better in case the number to be written to fifo and the values in that exist in the fifo, together exceed the  buffer size
 
-module DMA_controller_IO(
+module DMA_controller_IO
+#(parameter SIZE_BIT = 5)
+(
     input        i_Clock,
     input        i_Reset,//Dummy ?
     input [1:0]  i_Control,//2bit control with burst modes
@@ -35,9 +37,9 @@ module DMA_controller_IO(
     output       o_Tx_Send,// Trigger to send data to Uart 
     output  [7:0] o_uart_tx, // Byte to be sent to Uart
     output       o_uart_tx_dv, //Byte has finished writing and not an unstable value
-    input  [5:0] i_Data_Counter, //No of bytes to be sent in burst mode
+    input  [SIZE_BIT:0] i_Data_Counter, //No of bytes to be sent in burst mode
     input        i_Tx_Done, //Uart has successfully sent a bram_pointer
-    
+    output       w_Acknowlege,
     output reg [2:0]    r_SM_Main     = 0
     //inout [7:0]  bram_read_port,
     //inout [7:0]  bram_write_port
@@ -55,16 +57,16 @@ module DMA_controller_IO(
     
     //reg [2:0]    r_SM_Main     = 0;
     reg [31:0]   r_Address     = 0; //holds address given by control block 
-    reg [5:0]    r_Data_Counter=0;  //counts the number of bytes to be sent to the Uart, use integer datatype ?
-    reg [5:0]    r_Byte_Counter=0; 
-    reg r_Tx_Send_buffer =0; //Buffers the value
+    reg [SIZE_BIT:0]    r_Data_Counter=0;  //counts the number of bytes to be sent to the Uart, use integer datatype ?
+    reg [SIZE_BIT:0]    r_Byte_Counter=0; 
+    reg r_Tx_Send_buffer =0; //Buffers the values_CLEANUP
     
     reg r_uart_tx = 0;
     reg r_Read_Flag_dma = 0;
     reg [7:0] r_uart_tx_dma =0 ;
     reg r_uart_tx_dv_dma =0; 
     reg r_delay_send_flag = 0;
-    
+    reg r_Acknowlege;
     
     always @(posedge i_Clock)
     begin
@@ -81,6 +83,7 @@ module DMA_controller_IO(
         s_IDLE ://Await address
            
           begin
+            r_Acknowlege <= 1'b0;//Irrespective of bus grant it should be reset at idle
             if(i_Bus_Grant ==1'b1) //Maybe check the address from control as well ?
                 begin
                     r_SM_Main <=s_DMA_SETUP;
@@ -115,6 +118,7 @@ module DMA_controller_IO(
                         r_SM_Main <= s_DMA_IO_READ_BURST;
                         r_Data_Counter <= i_Data_Counter;
                         r_Byte_Counter <= i_Data_Counter;
+                        r_Read_Flag_dma <= 1'b1;
                     end
                 else if (i_Control == 2'b11) //Read a burst from I/O
                     begin
@@ -127,10 +131,28 @@ module DMA_controller_IO(
             
         s_DMA_IO_READ : //Read from the memory and write to a particular given address
             begin
+             r_uart_tx_dma <= i_uart_rx; //write to bram cell
              r_Read_Flag_dma <= 1'b1;
-             r_uart_tx_dma <= i_uart_rx; //write to bram cell            
-             r_SM_Main <= s_IDLE;
+             r_SM_Main <= s_CLEANUP;
             end 
+        s_DMA_IO_READ_BURST:
+            begin 
+                if(r_Byte_Counter!=1)
+                    begin
+                        r_uart_tx_dma <= i_uart_rx; //write to bram cell 
+                        r_Read_Flag_dma <= 1'b1;
+                        r_Byte_Counter <= r_Byte_Counter -1;
+                    end
+                else
+                    begin
+                         r_uart_tx_dma <= i_uart_rx; //read once before exiting, this is required cuz we set the byte counter to 1 in the prev check. We need to only check N-1 times, if we sample all N times we would create an extra reading
+                         r_Read_Flag_dma <= 1'b0;
+                         r_SM_Main <= s_CLEANUP;
+                         
+                    end 
+                $display("0x%0h",r_Byte_Counter);
+            end
+            
         s_DMA_IO_WRITE ://Read from the memory and write to a particular given address
             begin
                 if(r_delay_send_flag == 0)
@@ -144,8 +166,8 @@ module DMA_controller_IO(
                     r_uart_tx_dv_dma <= 1'b0;//No writing to buffer twice
                     r_Tx_Send_buffer <= 1'b1;
                     r_delay_send_flag <=1'b0;
-                    r_SM_Main <= s_IDLE;
-                    $display("0x%0h",r_Data_Counter);
+                    r_SM_Main <= s_CLEANUP;
+                    //$display("0x%0h",r_Data_Counter);
                     end
                 
             end
@@ -153,7 +175,7 @@ module DMA_controller_IO(
             begin 
                 if(r_Byte_Counter!=0)
                     begin
-                        r_uart_tx_dma <=r_Byte_Counter ;
+                        r_uart_tx_dma <=r_Byte_Counter ; //Bram value
                         r_uart_tx_dv_dma <= 1'b1;
                         r_Byte_Counter <= r_Byte_Counter -1;
                     end
@@ -161,9 +183,9 @@ module DMA_controller_IO(
                     begin
                         r_uart_tx_dv_dma <= 1'b0;
                         r_Tx_Send_buffer <= 1'b1;
-                        r_SM_Main <= s_IDLE;
+                        r_SM_Main <= s_CLEANUP;
                     end
-                $display("0x%0h",r_Byte_Counter);
+                
             end
             //write one word 
             //set data valid 
@@ -174,7 +196,11 @@ module DMA_controller_IO(
             //write third byte 
             //
             
-             
+        s_CLEANUP:
+            begin 
+                r_SM_Main <= s_IDLE;
+                r_Acknowlege <= 1'b1;
+            end      
     //create loopback module to test the I/O first
         default :
             r_SM_Main<= s_IDLE;
@@ -187,5 +213,6 @@ module DMA_controller_IO(
     assign o_uart_tx = r_uart_tx_dma;
     assign o_Read_Flag = r_Read_Flag_dma;
     assign o_Tx_Send = r_Tx_Send_buffer;
+    assign w_Acknowlege =  r_Acknowlege;
     //assign o_uart_tx  = r_uart_tx;
 endmodule

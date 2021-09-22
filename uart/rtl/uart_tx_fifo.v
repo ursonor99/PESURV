@@ -30,7 +30,7 @@
 // (10000000)/(115200) = 87
   
 module uart_tx_fifo 
-  #(parameter CLKS_PER_BIT = 0)
+  #(parameter CLKS_PER_BIT = 4)
   (
    input       i_Clock,
    input       i_Reset,
