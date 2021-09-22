@@ -167,6 +167,7 @@ module ram_2 #(
     ram_we,
     ram_type,
     sign,
+    port,
     ram_addr,
     ram_re,
     data_reg,
@@ -181,6 +182,7 @@ module ram_2 #(
     input   wire            ram_we;
     input   wire  [l-1:0]   ram_type;
     input   wire            sign;
+    input   wire            port;
     input   wire   [w-1:0]  ram_addr;
     input   wire            ram_re;
     output  wire  [w-1:0]   data_reg;
@@ -220,10 +222,11 @@ blk_mem_gen_0 bram_inst (
   .wea(wea),              // input wire [3 : 0] wea
   .addra(ram_word_aligned_addr),       // input wire [31 : 0] addra
   .dina(dina),            // input wire [31 : 0] dina
-  .douta(data_reada),          // output wire [31 : 0] douta
+  .douta(data_reada),  
+                          // output wire [31 : 0] douta
   .clkb(clk),            // input wire clkb           // input wire rstb
   .web(web),              // input wire [3 : 0] web
-  .addrb(addrb),          // input wire [31 : 0] addrb
+  .addrb(ram_word_aligned_addr),          // input wire [31 : 0] addrb
   .dinb(dinb),            // input wire [31 : 0] dinb
   .doutb(data_readb),
   .rsta_busy(rsta_busy),  // output wire rsta_busy
@@ -249,7 +252,7 @@ assign o_memory_address_misaligned = memory_address_misaligned ;
 always @(*)
 
 begin
-if (memory_address_misaligned==1'b0 )
+if (memory_address_misaligned==1'b0 && port==1'b0 )
 begin
             if(ram_we && ram_type==`FULLWORD)
             begin
@@ -294,10 +297,55 @@ begin
                     wea=0;
                 end
 end
+
+else if(memory_address_misaligned==1'b0 && port==1'b1 )
+begin
+            if(ram_we && ram_type==`FULLWORD)
+            begin
+                wea=4'b1111;
+                dinb=ram_wdat;
+             end
+                
+            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b00 )
+            begin
+                wea=4'b0011;
+                dinb[2*h-1:0]=ram_wdat[2*h-1:0];
+            end    
+            else if(ram_we && ram_type==`HALFWORD && ram_word__position==2'b10 )
+            begin    
+                wea=4'b1100;
+                dinb[4*h-1:2*h]= ram_wdat[2*h-1:0];    
+           end
+
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b00)
+                begin
+                dinb[h-1:0]=ram_wdat[h-1:0]; 
+                wea=4'b0001;
+                end              
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b01)
+            begin
+                dinb[2*h-1:h]=ram_wdat[h-1:0];
+                wea=4'b0010;
+            end    
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b10)
+            begin
+                dinb[3*h-1:2*h]=ram_wdat[h-1:0];
+                wea=4'b0100;
+            end
+            else if(ram_we &&  ram_type==`BYTE && ram_word__position==2'b11)
+            begin
+                dinb[4*h-1:3*h]=ram_wdat[h-1:0];
+                wea=4'b1000;
+            end
+            else 
+                begin
+                    dinb=0;
+                    wea=0;
+                end
            //$display("ram2= %h %h %b %b %b %b ",{Bram[address4],Bram[address3],Bram[address2],Bram[address1]},address1,ram_type[3:0],ram_we,ram_re,sign);
 
 end
-
+end
 
 //read
 wire[h-1:0] data1;
