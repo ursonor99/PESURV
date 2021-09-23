@@ -6,7 +6,7 @@
 module s_core_pipelined(
 input wire clk ,
 input wire rst_n,
-
+input wire[31:0] i_bram_read,
 ////pc
 
 
@@ -41,7 +41,11 @@ output wire[31:0] o_rd_writeback,
 output wire[64:0] o_if_id,
 output wire[182:0] o_id_ex,
 output wire[169:0] o_ex_mem,
-output wire[162:0] o_mem_wb
+output wire[162:0] o_mem_wb,
+output wire[3 : 0] o_wea,
+output wire[31 : 0] o_dina,
+output wire[31:0] o_bram_addr 
+
 );
 
 
@@ -126,7 +130,11 @@ wire[31:0] ram_data_out ;
 wire ram_sign ;//ctrl
 wire o_memory_address_misaligned;
 
-reg [31:0] ram_out_reg;
+wire [3 : 0] wea;
+wire [31 : 0] dina; 
+wire[31:0] bram_read ;
+wire[31:0] bram_addr ;
+//reg [31:0] ram_out_reg;
 
 /////////////////////writeback///////////////////////////////
 wire[1:0] writeback_sel;
@@ -419,8 +427,12 @@ ram_2 uut_ram(
     ram_addr,
     //ram_dout,
     ex_mem_reg[167],//read en
+    bram_read,
     ram_data_out ,
-    o_memory_address_misaligned
+    o_memory_address_misaligned,
+    wea,
+    dina,
+    bram_addr
     );
     
 //assign ram_write_data_in =mux3_output ; 
@@ -502,9 +514,10 @@ assign o_mem_wb = mem_wb_reg;
 
 
 
-
-
-
+assign o_wea = wea ;
+assign o_dina = dina ;
+assign bram_read= i_bram_read ;
+assign o_bram_addr = bram_addr ;
 
 
 assign br_taken = {id_ex_reg[128],br_is_branching};
