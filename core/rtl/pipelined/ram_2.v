@@ -287,6 +287,30 @@ wire[h-1:0] data4;
 
 //end
 
+reg ram_re_delayed ;
+reg [3:0] ram_type_delayed ;
+reg sign_delayed ;
+always @ (posedge clk)
+begin
+ram_re_delayed <=ram_re;
+ram_type_delayed <= ram_type;
+sign_delayed <= sign ;
+end
+
+
+//assign data1 = (ram_type==`FULLWORD || ram_type_delayed==`FULLWORD) || ((ram_type==`HALFWORD ||ram_type_delayed==`HALFWORD) && ram_word__position==2'b00) || (ram_type_delayed==`BYTE && ram_word__position==2'b00)  ? data_read[h-1:0] :
+//               (ram_type==`BYTE || ram_type_delayed==`BYTE )&& ram_word__position==2'b01 ? data_read[2*h-1:h] :
+//               (ram_type==`HALFWORD ||ram_type_delayed==`HALFWORD) && ram_word__position==2'b10 || ((ram_type==`BYTE || ram_type_delayed==`BYTE ) && ram_word__position==2'b10)? data_read[3*h-1:2*h] :
+//               (ram_type==`BYTE || ram_type_delayed==`BYTE ) && ram_word__position==2'b11 ? data_read[4*h-1:3*h]: 8'b00000000;
+               
+//assign data2 =  (ram_type==`FULLWORD || ram_type_delayed==`FULLWORD) || ((ram_type==`HALFWORD ||ram_type_delayed==`HALFWORD) && ram_word__position==2'b00)  ? data_read[2*h-1:h] :
+//                (ram_type==`HALFWORD ||ram_type_delayed==`HALFWORD) && ram_word__position==2'b10  ? data_read[4*h-1:3*h] :  8'b00000000;
+                
+//assign data3 =(ram_type==`FULLWORD || ram_type_delayed==`FULLWORD) ? data_read[3*h-1:2*h]:8'b00000000;
+//assign data4 =(ram_type==`FULLWORD || ram_type_delayed==`FULLWORD) ? data_read[4*h-1:3*h]:8'b00000000;
+
+
+
 assign data1 = ram_type==`FULLWORD || (ram_type==`HALFWORD && ram_word__position==2'b00) || (ram_type==`BYTE && ram_word__position==2'b00)  ? data_read[h-1:0] :
                ram_type==`BYTE && ram_word__position==2'b01 ? data_read[2*h-1:h] :
                ram_type==`HALFWORD && ram_word__position==2'b10 || (ram_type==`BYTE && ram_word__position==2'b10)? data_read[3*h-1:2*h] :
@@ -297,6 +321,31 @@ assign data2 =  ram_type==`FULLWORD || (ram_type==`HALFWORD && ram_word__positio
                 
 assign data3 =ram_type==`FULLWORD ? data_read[3*h-1:2*h]:8'b00000000;
 assign data4 =ram_type==`FULLWORD ? data_read[4*h-1:3*h]:8'b00000000;
+
+
+
+////read
+//reg[h-1:0] data1;
+//reg[h-1:0] data2;
+//reg[h-1:0] data3;
+//reg[h-1:0] data4;
+////always @(*)
+////begin
+
+////end
+//always @ (posedge clk)
+//begin
+// data1 <= ram_type==`FULLWORD || (ram_type==`HALFWORD && ram_word__position==2'b00) || (ram_type==`BYTE && ram_word__position==2'b00)  ? data_read[h-1:0] :
+//               ram_type==`BYTE && ram_word__position==2'b01 ? data_read[2*h-1:h] :
+//               ram_type==`HALFWORD && ram_word__position==2'b10 || (ram_type==`BYTE && ram_word__position==2'b10)? data_read[3*h-1:2*h] :
+//               ram_type==`BYTE && ram_word__position==2'b11 ? data_read[4*h-1:3*h]: 8'b00000000;
+// data2 <=  ram_type==`FULLWORD || (ram_type==`HALFWORD && ram_word__position==2'b00)  ? data_read[2*h-1:h] :
+//                ram_type==`HALFWORD && ram_word__position==2'b10  ? data_read[4*h-1:3*h] :  8'b00000000;
+                
+// data3 <=ram_type==`FULLWORD ? data_read[3*h-1:2*h]:8'b00000000;
+// data4 =ram_type==`FULLWORD ? data_read[4*h-1:3*h]:8'b00000000;
+
+//end
 ///////////////////////////////////////////////////////////////////////////////////////////
 //byte
 wire [w-1:0]signedbyte;
@@ -324,7 +373,8 @@ assign unsignedthreequaters={8'b0,data3,data2,data1};
 assign fullword={data4,data3,data2,data1};
 
 
-assign data_reg=(memory_address_misaligned==1'b0 && sign==1 && ram_type==`BYTE && ram_re==1 )?signedbyte:
+
+assign data_reg=(memory_address_misaligned==1'b0 && sign==1 && ram_type==`BYTE && ( ram_re==1  ) )?signedbyte:
                 (memory_address_misaligned==1'b0 && sign==0 && ram_type==`BYTE && ram_re==1)?unsignedbyte:
                 (memory_address_misaligned==1'b0 && sign==1 && ram_type==`HALFWORD && ram_re==1)?signedhalfword:
                 (memory_address_misaligned==1'b0 && sign==0 && ram_type==`HALFWORD && ram_re==1)?unsignedhalfword:
@@ -333,8 +383,17 @@ assign data_reg=(memory_address_misaligned==1'b0 && sign==1 && ram_type==`BYTE &
                 (memory_address_misaligned==1'b0 && ram_type==`FULLWORD && ram_re==1)?fullword:
                  32'b0;
 
+//wire byte_cond ;
+//assign byte_cond =(memory_address_misaligned==1'b0 && (sign==1 || sign_delayed==1) && (ram_type==`BYTE || ram_type_delayed==`BYTE )&& ( ram_re==1 || ram_re_delayed ==1 ) );
 
-
+//assign data_reg= byte_cond==1 ?signedbyte:
+//                (memory_address_misaligned==1'b0 && (sign==0 || sign_delayed==0) && (ram_type==`BYTE || ram_type_delayed==`BYTE ) &&( ram_re==1 || ram_re_delayed ==1 ))?unsignedbyte:
+//                (memory_address_misaligned==1'b0 &&(sign==1 || sign_delayed==1) && (ram_type==`HALFWORD || ram_type_delayed==`HALFWORD)&& ( ram_re==1 || ram_re_delayed ==1 ))?signedhalfword:
+//                (memory_address_misaligned==1'b0 && (sign==0 || sign_delayed==0) && (ram_type==`HALFWORD || ram_type_delayed==`HALFWORD) && ( ram_re==1 || ram_re_delayed ==1 ))?unsignedhalfword:
+////                (sign==1 && ram_type==`THREEQUATER && ram_re==1)?unsignedthreequaters:
+////                (sign==0 && ram_type==`THREEQUATER && ram_re==1)?signedthreequaters:
+//                (memory_address_misaligned==1'b0 && (ram_type==`FULLWORD || ram_type_delayed==`FULLWORD) && ( ram_re==1 || ram_re_delayed ==1 ))?fullword:
+//                 32'b0;
 
 
 

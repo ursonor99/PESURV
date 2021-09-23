@@ -7,7 +7,7 @@ input wire i_clk,
 input wire i_rst_n,
 //for multi cycle instr
 //input wire i_stall,
-input wire[1:0] trap,
+input wire[2:0] trap,
 input wire i_is_branch_true,
 input wire[31:0] i_branch_addr,
 
@@ -54,6 +54,7 @@ assign pc_nxt = branch_address_misaligned==0 && i_is_branch_true==1 ?   i_branch
                 trap==`E_CALL ?  2050 :
                 trap==`E_BREAK ?  2051 :
                 trap==`MEM_MISALIGN ?  2052 :
+                trap==3'b100 ? o_r_pc:
                 pc_plus4_addr[31:0] ;
 
 

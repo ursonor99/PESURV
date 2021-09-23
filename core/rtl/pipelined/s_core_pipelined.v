@@ -126,6 +126,7 @@ wire[31:0] ram_data_out ;
 wire ram_sign ;//ctrl
 wire o_memory_address_misaligned;
 
+reg [31:0] ram_out_reg;
 
 /////////////////////writeback///////////////////////////////
 wire[1:0] writeback_sel;
@@ -136,8 +137,15 @@ wire hazard_detection;
 wire[1:0] br_taken;
 ///////trap
 
-wire[1:0] trap;
+wire[2:0] trap;
 
+///////muxes
+
+wire [1:0]forward_mux1;
+wire [1:0]forward_mux2;
+wire [31:0]mux1_output;
+wire [31:0]mux2_output;
+wire [31:0]mux3_output;
 
 
 /////////////////////////////pipeline////////////////////////////////////
@@ -157,7 +165,8 @@ assign id_wire_value[181:0]={imm_out[31:0],id_control_values[20:0],branch_predic
 reg [169:0]ex_mem_reg;
 wire [169:0]ex_wire_value;
 wire [9:0]ex_control_values={id_ex_reg[144],id_ex_reg[141] ,id_ex_reg[140] ,id_ex_reg[139:136],id_ex_reg[135],id_ex_reg[130:129]};
-assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],id_ex_reg[127:96],id_ex_reg[63:32],id_ex_reg[31:0]};
+//assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],id_ex_reg[127:96],id_ex_reg[63:32],id_ex_reg[31:0]};
+assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0],mux3_output,id_ex_reg[63:32],id_ex_reg[31:0]};
 
 
  
@@ -166,14 +175,29 @@ assign ex_wire_value[169:0]={ex_control_values[9:0],adder_out[31:0],ALU_out[31:0
  wire[162:0]mem_wire_value;
  assign mem_wire_value[162:0]={ex_mem_reg[127:96],ex_mem_reg[169],ex_mem_reg[161:160],ex_mem_reg[159:128],ram_data_out[31:0],ex_mem_reg[63:32],ex_mem_reg[31:0]};
   
+//assign mem_wire_value[162:0]={ex_mem_reg[127:96],ex_mem_reg[169],ex_mem_reg[161:160],ex_mem_reg[159:128],ram_out_reg[31:0],ex_mem_reg[63:32],ex_mem_reg[31:0]};
+ 
+ 
+reg reg_load_handle;
+wire wire_load_handle;
+assign wire_load_handle = ex_mem_reg[6:0] == 5'b0000011 && reg_load_handle==0 ? 1'b1:0;
+always @(posedge clk)
+begin 
+if(rst_n==0) 
+        reg_load_handle<=0;
+else
+        reg_load_handle<=wire_load_handle;
+end
 
 
-
-///trap handeling
+/////trap handeling
+//assign trap = o_memory_address_misaligned==1 ? `MEM_MISALIGN:
+//              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000000 ?`E_CALL :
+//              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :2'b11;
 assign trap = o_memory_address_misaligned==1 ? `MEM_MISALIGN:
               inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000000 ?`E_CALL :
-              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :2'b11;
-
+              inst_rom_out[6:2] == 5'b11100 && inst_rom_out[14:12]==3'b000 && inst_rom_out[31:20]==12'b000000000001 ?`E_BREAK :
+               wire_load_handle==1 || hazard_detection==1  ? 3'b100 :3'b000;
 ////////////////////////////////////////////////////////////
 ///////////////////instruction fetch///////////////////////
 ///////////////////////////////////////////////////////////
@@ -332,10 +356,6 @@ assign br_cond_in = ALU_br_cond;
 
 ///////muxes//////////////////////////////////
 
-wire [1:0]forward_mux1;
-wire [1:0]forward_mux2;
-wire [31:0]mux1_output;
-wire [31:0]mux2_output;
                                            
 
 
@@ -356,6 +376,12 @@ assign ALU_input_1 = id_ex_reg[134]==1 ?mux1_output : id_ex_reg[63:32] ;//pc
 
 
 assign mux2_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:
+                   (forward_mux2==2'b10)?ex_mem_reg[127:96]:
+                   (forward_mux2==2'b01)?rd_writeback:
+                   (forward_mux2==2'b11)?ex_mem_reg[159:128]
+                                         :32'b0;
+                                         
+assign mux3_output=(forward_mux2==2'b00)?id_ex_reg[127:96]:
                    (forward_mux2==2'b10)?ex_mem_reg[127:96]:
                    (forward_mux2==2'b01)?rd_writeback:
                    (forward_mux2==2'b11)?ex_mem_reg[159:128]
@@ -382,7 +408,7 @@ assign br_jump_addr = id_ex_reg[131]==1 ? adder_out : ALU_out;
 assign ram_write_data_in = ex_mem_reg[95:64] ; 
 assign ram_addr = ex_mem_reg[127:96] ;
 
-/////////RAM 
+///////////RAM 
 
 ram_2 uut_ram(
     clk,
@@ -397,7 +423,29 @@ ram_2 uut_ram(
     o_memory_address_misaligned
     );
     
+//assign ram_write_data_in =mux3_output ; 
+//assign ram_addr = ALU_out[31:0] ;
+
+///////////RAM 
+//ram_2 uut_ram(
+//    clk,
+//    ram_write_data_in,
+//    id_ex_reg[141],//writeen
+//    id_ex_reg[139:136],//type
+//    id_ex_reg[135],//sign
+//    ram_addr,
+//    //ram_dout,
+//    id_ex_reg[140],//read en
+//    ram_data_out ,
+//    o_memory_address_misaligned
+  
+//    );
     
+
+//always @ (posedge clk )
+//begin
+//ram_out_reg<=ram_data_out;
+//end
 
 ////////////////////////////////////////////////////////////
 /////////////////////////WRITEBACK//////////////////////////
@@ -492,6 +540,11 @@ begin
         mem_wb_reg<=0;
         
     end
+        else if (wire_load_handle==1)
+            begin
+                if_id_reg<=if_id_reg;
+                id_ex_reg<=id_ex_reg;
+            end
     else if(hazard_detection)
         begin
         id_ex_reg<=0;
@@ -520,6 +573,7 @@ begin
             id_ex_reg<=0;
             //pc=id_ex_reg[63:32]+4'b0100;
             end
+
     else
            begin
            if_id_reg<=if_wire_value;
@@ -528,9 +582,16 @@ begin
            end
     if (rst_n==1)
         begin
-         ex_mem_reg<=ex_wire_value;
-         mem_wb_reg<=mem_wire_value;
-         
+        if (wire_load_handle==1)
+            begin
+                ex_mem_reg<=ex_mem_reg;
+               mem_wb_reg<=mem_wb_reg;
+            end
+        else 
+            begin
+                 ex_mem_reg<=ex_wire_value;
+                 mem_wb_reg<=mem_wire_value;
+             end
         end
         
 $display("%h forward_mux1  %h forward_mux2",forward_mux1,forward_mux2);
@@ -614,6 +675,7 @@ module forwarding(
     output wire [1:0]forward_mux1,
     output wire [1:0]forward_mux2
     
+    
     );
     //forwarding unit
     assign forward_mux1=(ex_mem_REG_write_en==1'b1 && EX_MEM_rd!=5'b0   && EX_MEM_rd==ID_EX_rs1 )?2'b10:
@@ -627,6 +689,7 @@ module forwarding(
                        (mem_wb_REG_write_en==1'b1  &&  MEM_WB_rd!=5'b0 &&  MEM_WB_rd==ID_EX_rs2)?2'b01:
                        (ex_mem_REG_write_en==1'b1 && MEM_WB_rd!=5'b0  && MEM_WB_rd==ID_EX_rs2 )?2'b11:
                        2'b00;
+                       
                       
 
 endmodule
