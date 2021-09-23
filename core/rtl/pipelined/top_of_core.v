@@ -19,6 +19,13 @@ module top(
  wire   [182:0]o_id_ex;
  wire   [169:0]o_ex_mem;
  wire  [162:0]o_mem_wb;
+
+wire [31:0] o_dma_addr; 
+wire [31:0] o_dma_count;
+wire [2:0] o_dma_type;
+wire o_dma_grant;
+wire dma_ack ;
+assign dma_ack = 0;
  
 wire [3 : 0] o_wea;
 wire [31 : 0] o_dina; 
@@ -49,6 +56,7 @@ s_core_pipelined uuts_core(
      clk,
      rst_n,
      i_bram_read,
+     dma_ack,
      
      o_pc[31:0],
      o_inst_data[31:0],
@@ -68,7 +76,11 @@ s_core_pipelined uuts_core(
      o_mem_wb[162:0],
       o_wea, 
       o_dina,
-      o_bram_addr
+      o_bram_addr,
+      o_dma_addr,
+      o_dma_count,
+      o_dma_type,
+      o_dma_grant
       
 );
 

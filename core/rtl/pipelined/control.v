@@ -10,6 +10,8 @@
 module control(
 input wire[31:0] instr_in,
 //input wire       setup ,
+input wire dma_status,
+
 
 output wire[4:0] ALU_OP,
 output wire REG_write_en,
@@ -26,9 +28,10 @@ output wire MUX_op1_select,
 output wire MUX_op2_select,
 output wire MUX_br_ret_addr_select,
 output wire MUX_br_Addr_sel,
-output wire[1:0] MUX_writeback 
+output wire[1:0] MUX_writeback ,
 //output wire reg_rd_ctrl
-
+output wire[2:0] dma_type,
+output wire dma_grant
 
     );
     
@@ -46,6 +49,8 @@ output wire[1:0] MUX_writeback
     //wire is_csr;
     wire is_op;
     wire is_op_imm;
+    wire is_dmab;
+    wire is_dmaw;
     
     assign is_branch = instr_in[6] & instr_in[5] & ~instr_in[4] & ~instr_in[3] & ~instr_in[2] & instr_in[1] & instr_in[0];
     assign is_jal = instr_in[6] & instr_in[5] & ~instr_in[4] & instr_in[3] & instr_in[2]  & instr_in[1] & instr_in[0];
@@ -60,6 +65,8 @@ output wire[1:0] MUX_writeback
     //assign is_system = instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & ~instr_in[2];
     //assign is_misc_mem = ~instr_in[6] & ~instr_in[5] & ~instr_in[4] & instr_in[3] & instr_in[2];
     
+    assign is_dmaw =instr_in[6] & instr_in[5] & instr_in[4] & instr_in[3] & ~instr_in[2];
+    assign is_dmab =instr_in[6] & instr_in[5] & instr_in[4] & ~instr_in[3] & instr_in[2];
     
     wire[2:0] FN3;
     wire FN7_BIT30;
@@ -139,6 +146,15 @@ output wire[1:0] MUX_writeback
     
 //    assign reg_rd_ctrl = setup == 1 ? 1'b1 :
 //                                    1'b0 ;
+    
+    assign dma_grant = dma_status==0 && is_dmaw ? 1'b1 :
+                       dma_status==0 && is_dmab ? 1'b1 : 1'b0 ;
+                       
+    assign dma_type = is_dmab && FN3 == `FN3_DMABR ? 3'b0001 :
+                      is_dmab && FN3 == `FN3_DMABW ? 3'b0010 :
+                      is_dmaw && FN3 == `FN3_DMAWR ? 3'b0011 :
+                      is_dmaw && FN3 == `FN3_DMAWW ? 3'b0100 : 3'b000;
+    
     
     
 endmodule

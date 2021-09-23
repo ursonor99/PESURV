@@ -67,6 +67,12 @@
 `define FN3_SB             3'b000
 `define FN3_SH             3'b001
 `define FN3_SW             3'b010
+//custom ////////////////////////////////////////////////////////////
+`define FN3_DMABR          3'b010
+`define FN3_DMABW          3'b101
+`define FN3_DMAWR          3'b010
+`define FN3_DMAWW          3'b101
+
 
 //control 
 `define OPCODE_OP           7'b0110011 //0B
@@ -74,6 +80,12 @@
 `define OPCODE_JAL          7'b1101111 //1C J
 `define OPCODE_JALR         7'b1100111 //19 I
 `define OPCODE_BRANCH       7'b1100011 //18 B
+//custom ////////////////////////////////////////////////////
+`define OPODE_DMAB          7'b1110111
+`define OPODE_DMAW          7'b1111011
+
+
+
 //RAM TYPE 
 `define BYTE 4'b0001
 `define HALFWORD 4'b0011
