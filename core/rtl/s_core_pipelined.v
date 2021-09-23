@@ -399,7 +399,7 @@ ram_2 uut_ram(
 
 assign rd_writeback = mem_wb_reg[129:128] == `WB_RET_ADDR ? mem_wb_reg[127:96]    ://ret addr adder_out
                      mem_wb_reg[129:128] == `WB_ALU_OUT  ? mem_wb_reg[162:131]     ://alu out
-                      mem_wb_reg[129:128] == `WB_LOAD_DATA? mem_wb_reg[95:64] : 32'b0 ;//ram data out
+                      mem_wb_reg[129:128] == `WB_LOAD_DATA ? mem_wb_reg[95:64] : 32'b0 ;//ram data out
 
 
 
