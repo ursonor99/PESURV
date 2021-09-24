@@ -56,11 +56,9 @@ integer n=0;
 initial
     begin
 //        for(i = 0; i < 1024 ;i = i+1) inst[i] = 32'b0;
-<<<<<<< HEAD
+
         $readmemh("rv32ui-p-add.mem", inst);
-=======
-        $readmemh("test.mem", inst);
->>>>>>> 23c271f19b906b2db6af1df840fc8aa7d4b03664
+
         for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end
 
