@@ -59,7 +59,8 @@ initial
 
 
 
-        $readmemh("dmatest.mem", inst);
+        //$readmemh("dmatest.mem", inst);
+        $readmemh("dma_contrl_test.mem", inst);
 
         for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end

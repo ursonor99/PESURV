@@ -214,7 +214,7 @@ assign ram_word__position=ram_addr[1:0];
 
 //wire [3:0] web;
 // wire [31:0] addrb;
-//wire [31:0] dinb;
+reg [31:0] dinb;
 //wire [31:0] doutb;
 
 //assign web =0;
