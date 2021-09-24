@@ -56,9 +56,13 @@ integer n=0;
 initial
     begin
 //        for(i = 0; i < 1024 ;i = i+1) inst[i] = 32'b0;
+<<<<<<< HEAD
 
         $readmemh("rv32ui-p-add.mem", inst);
 
+=======
+        $readmemh("test.mem", inst);
+>>>>>>> mission_bring_the_bram_out
         for(n=0;n<=7;n=n+1)   begin $display("%b",inst[n]);end
     end
 

@@ -59,7 +59,7 @@ module IMM_OP (
     wire [31:0] u_type;
     wire [31:0] j_type;
     wire [31:0] csr_type;
-    
+    wire [31:0] dma_type;
     wire is_branch;
     wire is_jal;
     wire is_jalr;
@@ -71,7 +71,8 @@ module IMM_OP (
     //wire is_csr;
     wire is_op;
     wire is_op_imm;
-    
+    wire is_dmaw;
+    wire is_dmab;
     wire [2:0] IMM_TYPE;
     
     assign is_branch = INSTR[6] & INSTR[5] & ~INSTR[4] & ~INSTR[3] & ~INSTR[2];
@@ -86,7 +87,9 @@ module IMM_OP (
     assign is_store = ~INSTR[6] & INSTR[5] & ~INSTR[4] & ~INSTR[3] & ~INSTR[2];
     //assign is_system = INSTR[6] & INSTR[5] & INSTR[4] & ~INSTR[3] & ~INSTR[2];
     //assign is_misc_mem = ~INSTR[6] & ~INSTR[5] & ~INSTR[4] & INSTR[3] & INSTR[2];
-    
+    assign is_dmaw =INSTR[6] & INSTR[5] & INSTR[4] & INSTR[3] & ~INSTR[2];
+    assign is_dmab =INSTR[6] & INSTR[5] & INSTR[4] & ~INSTR[3] & INSTR[2];
+
     
     //assign IMM_TYPE[1] =  | is_csr;
     //assign IMM_TYPE[2] = is_lui | is_auipc | is_jal | is_csr;
@@ -97,7 +100,7 @@ module IMM_OP (
     assign u_type = { INSTR[31:12], 12'h0 };
     assign j_type = { {11{INSTR[31]}}, INSTR[31], INSTR[19:12], INSTR[20], INSTR[30:21], 1'b0 };
     assign csr_type = { 27'b0, INSTR[19:15] };
-    
+    assign dma_type={ {20{1'b0}}, INSTR[31:20] };
     assign IMM_TYPE = {is_lui | is_auipc | is_jal , is_store | is_branch , is_op_imm | is_load | is_jalr | is_branch | is_jal } ;
     
 //    always @(*)
@@ -124,6 +127,7 @@ assign IMM_OP = `S_TYPE == IMM_TYPE ? s_type :
                 `B_TYPE == IMM_TYPE ? b_type :
                 `U_TYPE == IMM_TYPE ? u_type :
                 `J_TYPE == IMM_TYPE ? j_type : 
+                is_dmab || is_dmaw  ? dma_type:
                 //`R_TYPE == IMM_TYPE ? r_type : //R_type just returns I_type which is default
                 i_type ; // i_type is default, no error checking...     
 endmodule
