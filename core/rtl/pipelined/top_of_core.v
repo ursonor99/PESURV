@@ -1,7 +1,14 @@
 module top(
       input wire clk,
-      input wire rst_n
+      input wire rst_n,
+      
+    input  wire [3:0] web,
+    input wire [31:0] addrb,
+    input wire [31:0] dinb
+     
     );
+   
+   wire [31:0] doutb;
     
  wire [31:0]o_pc;
  wire [31:0]o_inst_data;
@@ -38,19 +45,16 @@ wire[31:0] data_read_a ;
 wire[31:0] bram_addr ;
  
  
-wire [3:0] web;
-wire [31:0] addrb;
-wire [31:0] dinb;
-wire [31:0] doutb;
+
 
 assign dina = o_dina ;
 assign wea = o_wea ;
 assign i_bram_read = data_read_a;
 assign bram_addr = o_bram_addr ;
 
-assign web =0;
-assign addrb =0;
-assign dinb =0;
+//assign web =0;
+//assign addrb =0;
+//assign dinb =0;
 
 s_core_pipelined uuts_core(
      clk,

@@ -25,10 +25,17 @@ module top_tb();
 
 reg clk;
 reg rst_n;
+reg[3:0] web;
+reg [31:0] addrb;
+reg [31:0] dinb;
+
 
 top uut (
 clk ,
-rst_n 
+rst_n ,
+web,
+addrb,
+dinb
 );
 
 always 
@@ -37,10 +44,16 @@ initial
 begin
 rst_n=0;
 clk=1;
-#5
+#15
 rst_n=1;
+#10
+web<=4'b1111;
+addrb<=32'h800;
+dinb <=32'h5544;
 
-
+#20
+web<=0000;
+addrb<=32'h000;
 
 #120
 $finish;
