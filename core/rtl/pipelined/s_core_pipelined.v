@@ -7,6 +7,7 @@ module s_core_pipelined(
 input wire clk ,
 input wire rst_n,
 input wire[31:0] i_bram_read,
+input wire dma_ack ,
 ////pc
 
 
@@ -44,8 +45,12 @@ output wire[169:0] o_ex_mem,
 output wire[162:0] o_mem_wb,
 output wire[3 : 0] o_wea,
 output wire[31 : 0] o_dina,
-output wire[31:0] o_bram_addr 
+output wire[31:0] o_bram_addr ,
 
+output wire [31:0] o_dma_addr,
+output wire [31:0] o_dma_count,
+output wire [2:0] o_dma_type,
+output wire o_dma_grant
 );
 
 
@@ -105,6 +110,9 @@ wire addr_sel;
 wire op1_select;
 wire op2_select;
 wire reg_write_en;//ctrl
+
+
+
 ////////////////////carry look ahead adder//////////////////////////
 wire[31:0] adder_in_1;
 wire[32:0] cla_adder_out;
@@ -259,6 +267,45 @@ assign instrom_pc_in=pc_out;
 ///////////////////////////////////////////////////////////
 
 
+///////////////////////////DMA ///////////////////////////////
+reg dma_status ;
+wire dma_grant ;
+wire[2:0] dma_type;
+
+
+assign o_dma_addr = dma_type==3'b011 || dma_type==3'b100 ? imm_out :rs1_data ;
+assign o_dma_count = rs2_data ;
+assign o_dma_grant = dma_grant ;
+assign o_dma_type = dma_type;
+
+
+
+always @ (posedge clk)
+begin
+
+if (rst_n==0 )
+begin
+dma_status =0 ;
+end
+
+else 
+begin
+    if( dma_status ==0 && dma_grant==1)
+        begin
+            dma_status =1 ;
+        end
+        
+    else if (dma_status ==1 && dma_ack==1)
+        begin
+            dma_status =0 ;
+        end
+
+end
+
+
+end
+
+
 
 //reg//////////////////////////////
 
@@ -298,6 +345,7 @@ assign pred_branch_addr=cla_branch_pred_out[31:0];
 
 control uut_ctrl ( 
 if_id_reg[31:0],
+dma_status,
 //setup,
 ALU_operator,
 reg_write_en,
@@ -314,13 +362,13 @@ op1_select,
 op2_select,
 BR_OR_RETURN_select,
 addr_sel,
-writeback_sel
+writeback_sel,
 //reg_rd_ctrl
+dma_type,
+dma_grant
  );
  
  
-
-
 
 
 
@@ -471,7 +519,7 @@ ram_2 uut_ram(
 
 assign rd_writeback = mem_wb_reg[129:128] == `WB_RET_ADDR ? mem_wb_reg[127:96]    ://ret addr adder_out
                      mem_wb_reg[129:128] == `WB_ALU_OUT  ? mem_wb_reg[162:131]     ://alu out
-                      mem_wb_reg[129:128] == `WB_LOAD_DATA? mem_wb_reg[95:64] : 32'b0 ;//ram data out
+                      mem_wb_reg[129:128] == `WB_LOAD_DATA ? mem_wb_reg[95:64] : 32'b0 ;//ram data out
 
 
 
