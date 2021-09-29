@@ -117,26 +117,26 @@ module dma_word_controller
           end 
         s_DMA_SETUP ://Decide what to do read to mem or from mem
             begin //Could be made more efficient by choosing based on a single bit at a time ?
-                if(i_Control == 2'b00) //Write a single byte to I/O reo_uart_txdundant ?
+                if(i_Control == 2'b10) //Write a single byte to I/O reo_uart_txdundant ?
                     begin
                         r_SM_Main <= s_DMA_IO_READ;
                         r_Word_Counter <= 4;
                         r_Read_Flag_dma <= 1'b1;
                         
                     end
-                else if (i_Control == 2'b01) //Read a single byte from I/O
+                else if (i_Control == 2'b11) //Read a single byte from I/O
                     begin
                         r_SM_Main <= s_DMA_IO_WRITE;
                         r_Word_Counter <= 4;
                         //r_Address_output <= r_Address +4;
                     end
-                else if (i_Control == 2'b10) //Write a burst to I/O
+                else if (i_Control == 2'b00) //Write a burst to I/O
                     begin
                         r_SM_Main <= s_DMA_IO_READ_BURST; 
                         r_Read_Flag_dma <= 1'b1;
                         //r_Address <= r_Address-4;//Decrement here since it will get added by default next cycle
                     end
-                else if (i_Control == 2'b11) //Read a burst from I/O
+                else if (i_Control == 2'b01) //Read a burst from I/O
                     begin
                         r_SM_Main <= s_DMA_IO_WRITE_BURST;
                     end

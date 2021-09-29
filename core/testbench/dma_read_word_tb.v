@@ -109,9 +109,9 @@ module dma_read_word_tb(
      .i_Tx_Byte(w_Tx_Byte_dma),
      .o_Tx_Active(),
      .o_Tx_Serial(w_Tx_Byte),
-     .o_Tx_Done(w_Tx_Done),
+     .o_Tx_Done(w_Tx_Done)
      //.o_Tx_Byte(o_byte)
-     .r_SM_Main(state_tx)
+     //.r_SM_Main(state_tx)
      );
      
   uart_fifo_rx #(.CLKS_PER_BIT(c_CLKS_PER_BIT)) UART_RX_INST
@@ -181,8 +181,8 @@ dma_word_controller  #(.SIZE_BIT(5)) dma_word_controller_inst
     
     @(posedge r_Clock)
     r_Reset <=1'b0;
-    r_control<=2'b10;
-    r_dma_word_count <= 6'b00010;
+    r_control<=2'b11;
+    r_dma_word_count <= 6'b00001;
     @(posedge r_Clock)
     UART_WRITE_BYTE(8'h10);    
     @(posedge r_Clock)
@@ -191,14 +191,14 @@ dma_word_controller  #(.SIZE_BIT(5)) dma_word_controller_inst
     UART_WRITE_BYTE(8'hF4);    
     @(posedge r_Clock)
     UART_WRITE_BYTE(8'hAD);
-    @(posedge r_Clock)
-    UART_WRITE_BYTE(8'h11);    
-    @(posedge r_Clock)
-    UART_WRITE_BYTE(8'h12);    
-    @(posedge r_Clock)
-    UART_WRITE_BYTE(8'h13);    
-    @(posedge r_Clock)
-    UART_WRITE_BYTE(8'h14);
+//    @(posedge r_Clock)
+//    UART_WRITE_BYTE(8'h11);    
+//    @(posedge r_Clock)
+//    UART_WRITE_BYTE(8'h12);    
+//    @(posedge r_Clock)
+//    UART_WRITE_BYTE(8'h13);    
+//    @(posedge r_Clock)
+//    UART_WRITE_BYTE(8'h14);
     
     @(posedge r_Clock)
     r_Bus_Grant<=1'b1;
@@ -206,7 +206,7 @@ dma_word_controller  #(.SIZE_BIT(5)) dma_word_controller_inst
     r_Bus_Grant<=1'b0;
 
     @(posedge w_Ack)
-    r_control<=2'b11;
+    r_control<=2'b10;
     
     @(posedge r_Clock)
     r_Bus_Grant<=1'b1;    
